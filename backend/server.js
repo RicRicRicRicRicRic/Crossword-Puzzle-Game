@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const config = require('./config/config');
-const registerRoutesRoutes = require('./routes/registerRoutes');
+const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API routes
-app.use('/api', registerRoutesRoutes);
+app.use('/api', authRoutes);
 
 // Confirm if server is running
 app.get('/', (req, res) => {

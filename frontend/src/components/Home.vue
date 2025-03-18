@@ -3,15 +3,15 @@
     export default {
         name: 'Home',
         mounted() {
-            document.title = 'Home Page'; // Dynamically set the title
+            document.title = 'Home Page'; 
         }
     };
 </script>
 
 <template>
-    <div>
-        <p>test</p>
-    </div>
+    <router-link to="/Login_or_Register">
+      <button>Go to Login or register</button>
+  </router-link>
 </template>
 
 
