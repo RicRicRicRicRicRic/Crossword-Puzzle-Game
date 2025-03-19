@@ -1,19 +1,23 @@
-//server.js
+// server.js
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 
 const config = require('./config/config');
-const authRoutes = require('./routes/authRoutes');
+const logger = require('./utils/logger');
 const errorHandler = require('./middlewares/errorHandler');
+const authRoutes = require('./routes/authRoutes');
+const httpLogger = require('./middlewares/pinoHttpLogger'); 
 
 const app = express();
 
+// Use the pino-http middleware
+app.use(httpLogger);
 
-// helmet for security
+// Helmet for security
 app.use(helmet());
 
-// Middlewares
+// Other middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,7 +30,7 @@ app.get('/', (req, res) => {
   res.send('Express Server is Running');
 });
 
-// Error handling from middlewares
+// Error handling middleware should be last
 app.use(errorHandler);
 
 app.listen(config.port, () => {
