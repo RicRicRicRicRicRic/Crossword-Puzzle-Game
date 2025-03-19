@@ -1,24 +1,22 @@
 import { createStore } from 'vuex';
 
-const store = createStore({
+const userFromStorage = localStorage.getItem('user');
+
+export default createStore({
   state: {
-    user: null,
+    user: userFromStorage ? JSON.parse(userFromStorage) : null,
     token: null
   },
   mutations: {
     setUser(state, user) {
       state.user = user;
+      localStorage.setItem('user', JSON.stringify(user));
     },
     setToken(state, token) {
       state.token = token;
     }
   },
   actions: {
-    // Define actions if needed
   },
-  getters: {
-    // Define getters if needed
-  }
+  getters: {}
 });
-
-export default store;
