@@ -1,17 +1,27 @@
+//components/Dashboard/Dashboard_Page.vue
 <script>
-    export default {
-        name: 'Dashboard',
-        mounted (){
-            document.tittle = 'User Page';
-        }
-    }
+import { mapState } from 'vuex';
+import AboutPlayer from './AboutPlayer.vue';
+
+
+export default {
+  name: 'DashboardPage',
+  components: {
+    AboutPlayer
+  },
+  computed: {
+    ...mapState(['user'])
+  }
+};
 </script>
 
 <template>
     <div>
+      <h1>Dashboard</h1>
+      <AboutPlayer :user="user" />
     </div>
-</template>
+  </template>
 
-<style lang="scss" scoped>
-
+<style scoped>
+/* Add styles for Dashboard page if needed */
 </style>
