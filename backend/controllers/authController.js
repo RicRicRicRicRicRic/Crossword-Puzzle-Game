@@ -9,8 +9,8 @@ exports.login = async (req, res, next) => {
       'SELECT * FROM player_account WHERE player_name = ? OR email = ?',
       [username, username]
     );
-    
-    console.log('Users found:', users); // Debug log
+    //Delete this line when deploying
+    console.log('Users found:', users); 
 
     if (users.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -18,7 +18,6 @@ exports.login = async (req, res, next) => {
     
     const user = users[0];
 
-    // Check password match
     if (user.password !== password) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
