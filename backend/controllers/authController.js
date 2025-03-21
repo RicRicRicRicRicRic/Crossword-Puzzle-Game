@@ -9,7 +9,7 @@ exports.login = async (req, res, next) => {
       'SELECT * FROM player_account WHERE player_name = ? OR email = ?',
       [username, username]
     );
-    //Delete this line when deploying
+
     console.log('Users found:', users); 
 
     if (users.length === 0) {
@@ -34,33 +34,50 @@ exports.login = async (req, res, next) => {
 
 exports.register = async (req, res, next) => {
   const { player_name, password, email } = req.body;
+  let connection;
   try {
-    const [existing] = await db.query(
-      'SELECT player_name, email FROM player_account WHERE player_name = ? OR email = ?',
+    connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    const [existing] = await connection.query(
+      "SELECT player_name, email FROM player_account WHERE player_name = ? OR email = ? FOR UPDATE",
       [player_name, email]
     );
 
     if (existing.length) {
-      if (existing.some(user => user.email === email && user.player_name === player_name)){
-        return res.status(400).json({ error: 'Email and Username are already taken'})
+      if (existing.some(user => user.email === email && user.player_name === player_name)) {
+        await connection.rollback();
+        return res.status(400).json({ error: "Email and Username are already taken" });
       }
       if (existing.some(user => user.player_name === player_name)) {
-        return res.status(400).json({ error: 'Username is already taken' });
+        await connection.rollback();
+        return res.status(400).json({ error: "Username is already taken" });
       }
       if (existing.some(user => user.email === email)) {
-        return res.status(400).json({ error: 'Email is already in use' });
+        await connection.rollback();
+        return res.status(400).json({ error: "Email is already in use" });
       }
     }
 
-    const [result] = await db.query(
-      'INSERT INTO player_account (player_name, password, email) VALUES (?, ?, ?)',
-      [player_name, password, email]
+    const [[{ maxId } = {}]] = await connection.query(
+      "SELECT MAX(CAST(SUBSTRING(acc_ID, 5) AS UNSIGNED)) AS maxId FROM player_account FOR UPDATE"
     );
-    
-    res.status(201).json({ message: 'Registration was successful!', acc_ID: result.insertId });
+    const nextId = (maxId || 0) + 1;
+    const acc_ID = `acc_${nextId}`;
+
+    const [result] = await connection.query(
+      "INSERT INTO player_account (acc_ID, player_name, password, email) VALUES (?, ?, ?, ?)",
+      [acc_ID, player_name, password, email]
+    );
+
+    await connection.commit();
+
+    res.status(201).json({ message: "Registration was successful!", acc_ID });
   } catch (error) {
-    logger.error(error, 'Unexpected error in registration');
+    if (connection) await connection.rollback();
+    logger.error(error, "Unexpected error in registration");
     next(error);
+  } finally {
+    if (connection) connection.release();
   }
 };
-
