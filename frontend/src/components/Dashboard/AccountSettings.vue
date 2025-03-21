@@ -2,6 +2,7 @@
 <script>
 export default {
   name: 'AccountSettings',
+  emits: ['close', 'logout'],
   data() {
     return {
       showLogoutConfirm: false
@@ -9,22 +10,18 @@ export default {
   },
   methods: {
     close() {
-      // Emit an event to the parent component to hide this modal
       this.$emit('close');
     },
     openLogoutConfirm() {
       this.showLogoutConfirm = true;
     },
     confirmLogout() {
-      // Clear the Vuex store and any persisted data
       this.$store.commit('setUser', null);
       this.$store.commit('setToken', null);
-      localStorage.removeItem('user'); // if you're persisting user data
+      localStorage.removeItem('user'); 
 
-      // Emit a logout event so the parent can handle additional logic if needed
       this.$emit('logout');
 
-      // Redirect to the authentication page
       this.$router.push({ name: 'Auth_page' });
     },
     cancelLogout() {
@@ -63,7 +60,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000; /* Ensure it appears on top */
+    z-index: 1000; 
   }
   
   .modal {

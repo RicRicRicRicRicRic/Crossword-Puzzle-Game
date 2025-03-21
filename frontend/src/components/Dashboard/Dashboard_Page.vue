@@ -36,7 +36,7 @@ dashboard
   border: 2px solid;
   transition: width 0.2s ease;
   overflow: visible;
-  background-color: greenyellow;
+  background-color: white;
 }
 
 .navigation-bar:hover {
