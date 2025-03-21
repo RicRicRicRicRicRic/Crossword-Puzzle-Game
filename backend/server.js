@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
 // Error handling middleware should be last
 app.use(errorHandler);
 
+logger.info('Logger is working!');
 app.listen(config.port, () => {
   console.log(`Server is running on http://localhost:${config.port}`);
 });
