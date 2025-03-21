@@ -1,3 +1,4 @@
+//components/Authentication/Auth_page.vue
 <script>
 import login from './Login.vue';
 import register from './Register.vue';

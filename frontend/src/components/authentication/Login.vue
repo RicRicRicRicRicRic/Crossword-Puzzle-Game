@@ -1,4 +1,4 @@
-//components/authentication/Login.vue
+//components/Authentication/Login.vue
 <script>
 import api from '@/services/api';
 
@@ -33,10 +33,10 @@ export default {
 <template>
     <form @submit.prevent="login">
         <div class="input-box">
-            <input v-model="loginInput" type="text" placeholder="Enter username or email" required />
+            <input v-model="loginInput" type="text" placeholder="Enter username or email" required autocomplete="current-username/email"/>
         </div>
         <div class="input-box">
-            <input v-model="password" type="password" placeholder="Enter password" required />
+            <input v-model="password" type="password" placeholder="Enter password" required autocomplete="current-password" />
         </div>
         <button type="submit">Login</button>
     </form>

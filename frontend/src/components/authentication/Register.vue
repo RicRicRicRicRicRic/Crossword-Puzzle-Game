@@ -1,4 +1,4 @@
-//components/authentication/Register.vue
+//components/Authentication/Register.vue
 <script>
 import axios from 'axios';
 
