@@ -1,6 +1,7 @@
 //controllers/authController.js
 const db = require('../config/db');
 const logger = require('../utils/logger');
+const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res, next) => {
   const { username, password } = req.body;
@@ -10,9 +11,9 @@ exports.login = async (req, res, next) => {
       [username, username]
     );
 
-    console.log('Users found:', users); 
+    console.log('Users found:', users);
 
-    if (users.length === 0) {
+    if (!users || users.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
@@ -22,7 +23,15 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    const token = 'dummy-token-' + user.acc_ID;
+    const payload = {
+      acc_ID: user.acc_ID,
+      player_name: user.player_name,
+      email: user.email,
+    };
+    const secret = process.env.JWT_SECRET || 'your_jwt_secret';
+    const options = { expiresIn: '1h' };
+
+    const token = jwt.sign(payload, secret, options);
     
     res.json({ user, token });
   } catch (error) {
@@ -30,7 +39,6 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
-
 
 exports.register = async (req, res, next) => {
   const { player_name, password, email } = req.body;
@@ -69,7 +77,6 @@ exports.register = async (req, res, next) => {
       "INSERT INTO player_account (acc_ID, player_name, password, email) VALUES (?, ?, ?, ?)",
       [acc_ID, player_name, password, email]
     );
-
     await connection.commit();
 
     res.status(201).json({ message: "Registration was successful!", acc_ID });

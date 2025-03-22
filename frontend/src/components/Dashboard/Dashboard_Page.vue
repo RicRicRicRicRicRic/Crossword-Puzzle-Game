@@ -1,5 +1,6 @@
 //components/Dashboard/Dashboard_Page.vue
 <script>
+import { markRaw } from 'vue';
 import { mapState } from 'vuex';
 import AboutPlayer from './AboutPlayer.vue';
 import Leaderboards from '@/components/Leaderboards/Leaderboards_Page.vue';
@@ -13,26 +14,25 @@ export default {
     ...mapState(['user'])
   },
   data() {
-    return {
-      headerText: 'Play a game',
-      currentView: PlayGame
+  return {
+    headerText: 'Play a game',
+    currentView: markRaw(PlayGame)
     }
   },
   methods: {
     handleButtonClick(text) {
       this.headerText = text;
       if (text === 'Play a game') {
-        this.currentView = PlayGame;
+        this.currentView = markRaw(PlayGame);
       } else if (text === 'Create a game') {
-        this.currentView = CreateGame;
+        this.currentView = markRaw(CreateGame);
       } else if (text === 'Leaderboards') {
-        this.currentView = Leaderboards;
+        this.currentView = markRaw(Leaderboards);
       }
     }
   }
 };
 </script>
-
 
 <template>
   <div class="dashboard-container">

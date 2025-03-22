@@ -5,9 +5,11 @@ const cors = require('cors');
 
 const config = require('./config/config');
 const logger = require('./utils/logger');
+const httpLogger = require('./middlewares/pinoHttpLogger'); 
+
 const errorHandler = require('./middlewares/errorHandler');
 const authRoutes = require('./routes/authRoutes');
-const httpLogger = require('./middlewares/pinoHttpLogger'); 
+const profileRoutes = require('./routes/profileRoutes');
 
 const app = express();
 
@@ -24,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // API routes
 app.use('/api', authRoutes);
+app.use('/api', profileRoutes);
 
 // Confirm if server is running
 app.get('/', (req, res) => {

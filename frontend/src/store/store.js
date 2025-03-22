@@ -1,11 +1,12 @@
 import { createStore } from 'vuex';
 
 const userFromStorage = localStorage.getItem('user');
+const tokenFromStorage = localStorage.getItem('token');
 
 export default createStore({
   state: {
     user: userFromStorage ? JSON.parse(userFromStorage) : null,
-    token: null
+    token: tokenFromStorage || null
   },
   mutations: {
     setUser(state, user) {
@@ -14,9 +15,9 @@ export default createStore({
     },
     setToken(state, token) {
       state.token = token;
+      localStorage.setItem('token', token);
     }
   },
-  actions: {
-  },
+  actions: {},
   getters: {}
 });

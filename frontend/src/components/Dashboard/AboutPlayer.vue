@@ -1,6 +1,7 @@
 //components/Dashboard/AboutPlayer.vue
 <script>
-import AccountSettings from './AccountSettings.vue'; 
+import AccountSettings from './AccountSettings.vue';
+import defaultpfp from '@/assets/defaultpfp.png'; 
 
 export default {
   name: 'AboutPlayer',
@@ -16,6 +17,17 @@ export default {
   data() {
     return {
       showAccountSettings: false
+    };
+  },
+  computed: {
+    profileImage() {
+      if (this.user && this.user.profile_img) {
+        if (this.user.profile_img.startsWith('data:')) {
+          return this.user.profile_img;
+        }
+        return `data:image/png;base64,${this.user.profile_img}`;
+      }
+      return defaultpfp;
     }
   },
   methods: {
@@ -35,10 +47,11 @@ export default {
 <template>
   <div class="about-container">
     <div class="pfp-container">
-      <img class="pfp" src="@/assets/defaultpfp.png" alt="Default Profile Picture" />
+      <img class="user-pfp" :src="profileImage" alt="Profile Picture" />
     </div>
     <div class="info-container">
       <div v-if="user">
+        <p>{{ user.acc_ID }}</p>
         <p>{{ user.player_name }}</p>
         <p>{{ user.email }}</p>
       </div>
@@ -47,12 +60,13 @@ export default {
       </div>
       <button @click="openAccountSettings">Account Settings</button>
     </div>
-
     <AccountSettings 
       v-if="showAccountSettings" 
+      :user="user"
       @close="closeAccountSettings"
       @logout="handleLogout"
     />
+
   </div>
 </template>
 
@@ -71,7 +85,7 @@ export default {
   align-items: center;
 }
 
-.pfp {
+.user-pfp {
   width: 70px;
   height: 70px;
   border-radius: 50%;
@@ -86,6 +100,7 @@ export default {
   opacity: 0;
   transition: opacity 200ms ease;
   white-space: nowrap;
+  font-size: 17px;
 }
 
 .navigation-bar:hover .about-container .info-container {
