@@ -6,8 +6,11 @@
 </script>
 
 <template>
-    <div>
-        <p>This is create game</p>
+    <div class="crossword-panel">
+        <p>this is crossword panel</p>
+    </div>
+    <div class="editor-panel">
+
     </div>
 </template>
 
