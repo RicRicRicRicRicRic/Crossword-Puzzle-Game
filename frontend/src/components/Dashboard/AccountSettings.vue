@@ -1,6 +1,7 @@
 //components/Dashboard/AccountSettings.vue
 <script>
 import api from '@/services/api';
+import defaultpfp from '@/assets/defaultpfp.png'; 
 export default {
   name: 'AccountSettings',
   props: {
@@ -83,7 +84,7 @@ export default {
       }
 
       try {
-        const response = await api.put('/profile', updatedData);
+        const response = await api.post('/profile', updatedData);
         if (response.data && response.data.message) {
           alert(response.data.message);
           const updatedUser = { ...this.user, ...updatedData };
@@ -105,7 +106,20 @@ export default {
         }
       }
     }
+  },
+  computed: {
+  profileImage() {
+    if (this.user && this.user.profile_img) {
+      if (this.user.profile_img.startsWith('data:')) {
+        return this.user.profile_img;
+      }
+      return `data:image/png;base64,${this.user.profile_img}`;
+    }
+
+    return defaultpfp;
   }
+},
+
 };
 </script>
 
@@ -114,6 +128,9 @@ export default {
     <div class="modal">
       <h3>Account Settings</h3>
       <div v-if="user">
+        <div class="pfp-container">
+          <img class="user-pfp" :src="profileImage" alt="Profile Picture" />
+        </div>
         <div class="input-item">
           <label for="acc_ID">Player ID:</label>
           <div class="input-container">
@@ -319,4 +336,16 @@ export default {
 .logout-modal {
   text-align: center;
 }
+
+.pfp-container {
+  margin-bottom: 10px;
+}
+
+.user-pfp {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
 </style>
