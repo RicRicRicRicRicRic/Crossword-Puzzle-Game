@@ -20,6 +20,9 @@ export default {
       editingEmail: false,
       editingPassword: false,
 
+      editingProfileImage: false,
+      newProfileImg: null,  // will hold the base64 string
+
       editedPlayerName: '',
       editedEmail: '',
       editedPassword: ''
@@ -72,7 +75,8 @@ export default {
         acc_ID: this.user.acc_ID,
         player_name: this.user.player_name,
         email: this.user.email,
-        password: this.user.password
+        password: this.user.password,
+        profile_img: this.user.profile_img // keep the existing profile image
       };
 
       if (field === 'player_name') {
@@ -105,21 +109,73 @@ export default {
           alert('An error occurred while updating the profile.');
         }
       }
+    },
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    handleProfileImageChange(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          // event.target.result will be a base64 string
+          this.newProfileImg = event.target.result;
+          this.editingProfileImage = true;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    async saveProfileImage() {
+      // Create updated data including the new profile image as a base64 string
+      let updatedData = {
+        acc_ID: this.user.acc_ID,
+        player_name: this.user.player_name,
+        email: this.user.email,
+        password: this.user.password,
+        profile_img: this.newProfileImg
+      };
+      try {
+        const response = await api.post('/profile', updatedData);
+        if (response.data && response.data.message) {
+          alert(response.data.message);
+          const updatedUser = { ...this.user, ...updatedData };
+          this.$store.commit('setUser', updatedUser);
+          this.$emit('updateUser', updatedUser);
+          // Reset the editing state
+          this.editingProfileImage = false;
+          this.newProfileImg = null;
+        }
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.error) {
+          alert(error.response.data.error);
+        } else {
+          alert('An error occurred while updating the profile image.');
+        }
+      }
+    },
+    cancelProfileImage() {
+      // Cancel the profile image update
+      this.editingProfileImage = false;
+      this.newProfileImg = null;
+      // Also clear the file input value so that the same file can be re-selected if desired.
+      this.$refs.fileInput.value = '';
     }
   },
   computed: {
-  profileImage() {
-    if (this.user && this.user.profile_img) {
-      if (this.user.profile_img.startsWith('data:')) {
-        return this.user.profile_img;
+    displayProfileImage() {
+      // If a new image is selected (and not yet saved), preview it; otherwise use user.profile_img or the default
+      if (this.editingProfileImage && this.newProfileImg) {
+        return this.newProfileImg;
       }
-      return `data:image/png;base64,${this.user.profile_img}`;
+      if (this.user && this.user.profile_img) {
+        if (this.user.profile_img.startsWith('data:')) {
+          return this.user.profile_img;
+        }
+        return `data:image/png;base64,${this.user.profile_img}`;
+      }
+      return defaultpfp;
     }
-
-    return defaultpfp;
   }
-},
-
 };
 </script>
 
@@ -129,7 +185,21 @@ export default {
       <h3>Account Settings</h3>
       <div v-if="user">
         <div class="pfp-container">
-          <img class="user-pfp" :src="profileImage" alt="Profile Picture" />
+          <img class="user-pfp" :src="displayProfileImage" alt="Profile Picture" />
+          <button v-if="!editingProfileImage" class="change-pfp-btn" @click="triggerFileInput">
+            Change Profile
+          </button>
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            style="display: none"
+            @change="handleProfileImageChange"
+          />
+          <div v-if="editingProfileImage" class="btn-row">
+            <button @click="saveProfileImage">Save</button>
+            <button @click="cancelProfileImage">Cancel</button>
+          </div>
         </div>
         <div class="input-item">
           <label for="acc_ID">Player ID:</label>
@@ -242,7 +312,7 @@ export default {
   </div>
 
   <div v-if="showLogoutConfirm" class="modal-overlay">
-    <div class="modal logout-modal">
+    <div class="modal-confirmation logout-modal">
       <p>Are you sure you want to log out?</p>
       <div class="bttn-container">
         <button @click="confirmLogout">Yes</button>
@@ -271,6 +341,14 @@ export default {
   padding: 20px;
   border-radius: 8px;
   min-width: 350px;
+  min-height: 500px;
+}
+.modal-confirmation {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 350px;
+  min-height: 80px;
 }
 
 .input-item {
@@ -325,6 +403,11 @@ export default {
   margin-top: 5px;
 }
 
+/* Center Save/Cancel buttons in the profile image container */
+.pfp-container .btn-row {
+  justify-content: center;
+}
+
 .bttn-container {
   display: flex;
   gap: 30px;
@@ -339,6 +422,7 @@ export default {
 
 .pfp-container {
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .user-pfp {
@@ -346,6 +430,13 @@ export default {
   height: 70px;
   border-radius: 50%;
   overflow: hidden;
+  display: block;
+  margin: 0 auto 10px;
 }
 
+.change-pfp-btn {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
 </style>
