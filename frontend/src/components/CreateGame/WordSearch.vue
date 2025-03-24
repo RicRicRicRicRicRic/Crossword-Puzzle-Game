@@ -17,7 +17,7 @@ export default {
     async onInput() {
       if (this.searchQuery.length > 0) {
         try {
-          const response = await words_selection.get(`https://api.datamuse.com/words?sp=${this.searchQuery}*`);
+          const response = await words_selection.get(`/words?sp=${this.searchQuery}*`);
           this.suggestions = response.data.map(item => item.word);
           this.showDropdown = this.suggestions.length > 0;
         } catch (error) {
