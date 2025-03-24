@@ -1,8 +1,8 @@
-//controllers/wordsearchController.js
 // controllers/wordsearchController.js
 const fs = require('fs');
-const WordPOS = require('wordpos');
-const wordpos = new WordPOS();
+const path = require('path');
+const WordNet = require('node-wordnet');
+const wordnet = new WordNet();
 
 let wordArray = [];
 
@@ -26,47 +26,53 @@ let wordArray = [];
   }
 })();
 
-// Lookup function for word definitions
+// Lookup function for word definitions using WordNet
 exports.lookup = (req, res, next) => {
   const word = req.params.word;
-  try {
-    wordpos.lookup(word, (results) => {
-      if (!results || results.length === 0) {
-        return res.status(404).json({ error: 'Word not found' });
-      }
-      res.json(results);
-    });
-  } catch (error) {
-    next(error);
-  }
+  wordnet.lookup(word, (err, definitions) => {
+    if (err) {
+      return next(err);
+    }
+    if (!definitions || definitions.length === 0) {
+      return res.status(404).json({ error: 'Word not found' });
+    }
+    res.json(definitions);
+  });
 };
 
-// Suggestions function: Only returns words that have a definition per WordPOS
+// Suggestions function: Only return words that WordNet can define
 exports.suggestions = async (req, res, next) => {
   const query = req.query.query;
   if (!query) {
     return res.status(400).json({ error: 'No query provided' });
   }
-
-  // First, filter candidate words from wordArray that start with the query (case-insensitive)
+  
+  // First, filter candidate words that start with the query (case-insensitive)
   const candidateWords = wordArray
     .filter(word => word.toLowerCase().startsWith(query.toLowerCase()))
-    // Increase the slice size to check more candidates before limiting to 10 valid suggestions.
     .slice(0, 20);
-
-  // Check each candidate word to see if it has a definition
+  
   let validSuggestions = [];
+  
+  // Helper function to check if a word has a definition in WordNet
+  const lookupWord = (word) => new Promise((resolve) => {
+    wordnet.lookup(word, (err, definitions) => {
+      if (err || !definitions || definitions.length === 0) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+  
+  // Check each candidate word asynchronously
   await Promise.all(
-    candidateWords.map(word =>
-      new Promise(resolve => {
-        wordpos.lookup(word, (results) => {
-          if (results && results.length > 0) {
-            validSuggestions.push(word);
-          }
-          resolve();
-        });
-      })
-    )
+    candidateWords.map(async (word) => {
+      const isValid = await lookupWord(word);
+      if (isValid) {
+        validSuggestions.push(word);
+      }
+    })
   );
   
   // Return up to 10 valid suggestions
