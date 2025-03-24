@@ -70,44 +70,48 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .about-container {
   position: relative;
-  display: inline-block; 
+  display: inline-block;
   margin-left: -1px;
+
+  .pfp-container {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .user-pfp {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  }
+
+  .info-container {
+    position: absolute;
+    top: 50%;
+    left: 95%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    white-space: nowrap;
+    font-size: 17px;
+
+    p {
+      margin: 0;
+    }
+  }
 }
 
-.pfp-container {
-  width: 100px;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.user-pfp {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.info-container {
-  position: absolute;
-  top: 50%;
-  left: 95%;
-  transform: translateY(-50%);
-  opacity: 0;
-  transition: opacity 200ms ease;
-  white-space: nowrap;
-  font-size: 17px;
-}
-
-.navigation-bar:hover .about-container .info-container {
-  opacity: 1;
-}
-
-.info-container p {
-  margin: 0;
+.navigation-bar:hover {
+  .about-container {
+    .info-container {
+      opacity: 1;
+    }
+  }
 }
 </style>

@@ -1,4 +1,14 @@
 //components/CreateGame/CreateGame_Page.vue
+<script>
+  import WordSearch from './WordSearch.vue';
+  
+  export default {
+    components: {
+      WordSearch,
+    },
+  };
+</script>
+
 <template>
     <div class="creategame-container">
       <div class="creategame-panel">
@@ -7,19 +17,9 @@
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import WordSearch from './WordSearch.vue';
-  
-  export default {
-    components: {
-      WordSearch,
-    },
-  };
-  </script>
-  
-  <style scoped>
+</template>
+    
+<style lang="scss" scoped>
   .creategame-container {
     display: flex;
     justify-content: center;
@@ -27,12 +27,13 @@
     margin-top: 15px;
     height: 91vh;
     border-bottom: 5px solid;
-  }
   
-  .creategame-panel {
-    width: 500px;
-    height: 500px;
-    border: 2px solid black; 
+    .creategame-panel {
+      width: 500px;
+      height: 500px;
+      border: 2px solid black;
+    }
   }
-  </style>
+</style>
+  
   

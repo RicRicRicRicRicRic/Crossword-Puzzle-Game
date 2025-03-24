@@ -42,6 +42,6 @@ export default {
     </form>
 </template>
 
-<style scoped>
-/* Add your component styles here */
+<style lang="scss" scoped>
+
 </style>

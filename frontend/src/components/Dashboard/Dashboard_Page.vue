@@ -57,12 +57,27 @@ export default {
       {{ headerText }}
     </div>
     <div class="dashboard-panel">
+
       <component :is="currentView" />
     </div>
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.dashboard-container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dashboard-panel {
+  margin-left: 100px;
+  margin-top: 50px;
+  height: calc(100vh - 65px);
+  overflow-y: auto;
+  overflow: hidden;
+}
+
 .navigation-bar {
   position: fixed;
   top: 0;
@@ -73,69 +88,62 @@ export default {
   background-color: white;
   transition: width 200ms ease;
   z-index: 10;
-}
-.navigation-bar:hover {
-  width: 220px;
-}
 
+  &:hover {
+    width: 220px;
+
+    .nav-buttons {
+      width: 220px;
+
+      p {
+        transition: opacity 400ms ease-in;
+        opacity: 1;
+      }
+    }
+  }
+}
 
 .button-container {
   height: 60vh;
 }
+
 .nav-buttons {
   position: relative;
   width: 100px;
   height: 80px;
   transition: width 200ms ease;
   font-size: 16px;
-}
-.navigation-bar:hover .nav-buttons {
-  width: 220px;
+
+  p {
+    position: absolute;
+    left: 90px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    opacity: 0;
+  }
 }
 
 .button-img {
   position: absolute;
-  left: 20px; 
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
   width: 60px;
 }
-.nav-buttons p {
-  position: absolute;
-  left: 90px; 
-  top: 50%;
-  transform: translateY(-50%);
-  margin: 0;
-  opacity: 0;
-}
-.navigation-bar:hover .nav-buttons p {
-  transition: opacity 400ms ease-in;
-  opacity: 1;
-}
-
 
 .header-bar {
   position: fixed;
   top: 0;
-  left: 100px; 
+  left: 100px;
   width: calc(100% - 100px);
   height: 65px;
-  border: 2px solid;
+  border-bottom: 2px solid;
   background-color: white;
   font-size: 30px;
   display: flex;
-  justify-content: center; 
-  align-items: center;   
-}
-
-.dashboard-container {
-  position: relative;
-  height: 100vh;
-}
-.dashboard-panel {
-  margin-left: 100px; 
-  margin-top: 50px;   
-  height: calc(100vh - 50px);
-  overflow-y: auto;
+  justify-content: center;
+  align-items: center;
 }
 </style>
+

@@ -21,7 +21,7 @@ export default {
       editingPassword: false,
 
       editingProfileImage: false,
-      newProfileImg: null,  // will hold the base64 string
+      newProfileImg: null,  
 
       editedPlayerName: '',
       editedEmail: '',
@@ -76,7 +76,7 @@ export default {
         player_name: this.user.player_name,
         email: this.user.email,
         password: this.user.password,
-        profile_img: this.user.profile_img // keep the existing profile image
+        profile_img: this.user.profile_img 
       };
 
       if (field === 'player_name') {
@@ -118,7 +118,6 @@ export default {
       if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
-          // event.target.result will be a base64 string
           this.newProfileImg = event.target.result;
           this.editingProfileImage = true;
         };
@@ -126,7 +125,6 @@ export default {
       }
     },
     async saveProfileImage() {
-      // Create updated data including the new profile image as a base64 string
       let updatedData = {
         acc_ID: this.user.acc_ID,
         player_name: this.user.player_name,
@@ -141,7 +139,6 @@ export default {
           const updatedUser = { ...this.user, ...updatedData };
           this.$store.commit('setUser', updatedUser);
           this.$emit('updateUser', updatedUser);
-          // Reset the editing state
           this.editingProfileImage = false;
           this.newProfileImg = null;
         }
@@ -154,16 +151,13 @@ export default {
       }
     },
     cancelProfileImage() {
-      // Cancel the profile image update
       this.editingProfileImage = false;
       this.newProfileImg = null;
-      // Also clear the file input value so that the same file can be re-selected if desired.
       this.$refs.fileInput.value = '';
     }
   },
   computed: {
     displayProfileImage() {
-      // If a new image is selected (and not yet saved), preview it; otherwise use user.profile_img or the default
       if (this.editingProfileImage && this.newProfileImg) {
         return this.newProfileImg;
       }
@@ -322,33 +316,35 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-}
 
-.modal {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  min-width: 350px;
-  min-height: 500px;
-}
-.modal-confirmation {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  min-width: 350px;
-  min-height: 80px;
+  .modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 350px;
+    min-height: 500px;
+  }
+
+  .modal-confirmation {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 350px;
+    min-height: 80px;
+    text-align: center;
+  }
 }
 
 .input-item {
@@ -360,52 +356,45 @@ export default {
   align-items: center;
   gap: 10px;
   margin-top: 5px;
-}
 
-.input-container > input,
-.password-wrapper input {
-  padding: 5px;
-  box-sizing: border-box;
-}
-
-.input-container > input {
-  flex: 1;
+  > input {
+    padding: 5px;
+    box-sizing: border-box;
+    flex: 1;
+    height: 35px; 
+  }
 }
 
 .password-wrapper {
   position: relative;
-  flex: 1;           
-  display: flex;     
+  flex: 1;
+  display: flex;
   align-items: center;
-}
 
-.password-wrapper input {
-  flex: 1;           
-  width: auto;      
-  padding-right: 2.5rem; 
-}
+  input {
+    flex: 1;
+    width: auto;
+    padding-right: 2.5rem;
+    height: 30px; 
+  }
 
-.toggle-password {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0;
+  .toggle-password {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+  }
 }
 
 .btn-row {
   display: flex;
   gap: 10px;
   margin-top: 5px;
-}
-
-/* Center Save/Cancel buttons in the profile image container */
-.pfp-container .btn-row {
-  justify-content: center;
 }
 
 .bttn-container {
@@ -416,13 +405,13 @@ export default {
   margin-top: 20px;
 }
 
-.logout-modal {
-  text-align: center;
-}
-
 .pfp-container {
   margin-bottom: 10px;
   text-align: center;
+
+  .btn-row {
+    justify-content: center;
+  }
 }
 
 .user-pfp {
@@ -440,3 +429,4 @@ export default {
   cursor: pointer;
 }
 </style>
+
