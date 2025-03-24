@@ -1,68 +1,4 @@
 //components/PlayGame/WordSearch.vue
-<script>
-import { definition, words_selection } from '@/services/dictionary';
-
-export default {
-  name: "WordSearch",
-  data() {
-    return {
-      searchQuery: '',
-      suggestions: [], 
-      definition: null,
-      selectedWord: '',
-      showDropdown: false,
-    };
-  },
-  methods: {
-    async onInput() {
-      if (this.searchQuery.length > 0) {
-        try {
-          const response = await words_selection.get(`/words?sp=${this.searchQuery}*`);
-          this.suggestions = response.data.map(item => item.word);
-          this.showDropdown = this.suggestions.length > 0;
-        } catch (error) {
-          console.error("Error fetching suggestions:", error);
-          this.suggestions = [];
-          this.showDropdown = false;
-        }
-      } else {
-        this.suggestions = [];
-        this.showDropdown = false;
-      }
-    },
-    selectWord(word) {
-      this.searchQuery = word;
-      this.selectedWord = word;
-      this.showDropdown = false;
-      this.getDefinition(word);
-    },
-    async getDefinition(word) {
-      try {
-        const response = await definition.get(`/${word}`);
-        const meanings = response.data[0].meanings;
-        let defs = [];
-        meanings.forEach(meaning => {
-          meaning.definitions.forEach(d => {
-            defs.push(d.definition);
-          });
-        });
-        if (defs.length) {
-          let firstSentence = defs[0].split('. ')[0];
-          if (!firstSentence.endsWith('.')) {
-            firstSentence += '.';
-          }
-          this.definition = [firstSentence];
-        } else {
-          this.definition = ["Definition not found."];
-        }
-      } catch (error) {
-        this.definition = ["Definition not found."];
-      }
-    }
-  }
-};
-</script>
-
 <template>
   <div class="wordsearch-container">
     <div class="input-box">
@@ -88,6 +24,72 @@ export default {
     </div>
   </div>
 </template>
+
+<script>
+import { definition, wordSuggest } from '@/services/dictionary';
+
+export default {
+  name: "WordSearch",
+  data() {
+    return {
+      searchQuery: '',
+      suggestions: [],
+      definition: null,
+      selectedWord: '',
+      showDropdown: false,
+    };
+  },
+  methods: {
+    // Fetch suggestions from the backend based on the search query.
+    async onInput() {
+      if (this.searchQuery.length > 0) {
+        try {
+          const response = await wordSuggest.get('', {
+            params: { query: this.searchQuery }
+          });
+          this.suggestions = response.data;
+          this.showDropdown = this.suggestions.length > 0;
+        } catch (error) {
+          console.error("Error fetching suggestions:", error);
+          this.suggestions = [];
+          this.showDropdown = false;
+        }
+      } else {
+        this.suggestions = [];
+        this.showDropdown = false;
+      }
+    },
+    // When a word is selected, update the input and fetch its definition.
+    selectWord(word) {
+      this.searchQuery = word;
+      this.selectedWord = word;
+      this.showDropdown = false;
+      this.getDefinition(word);
+    },
+    // Fetch the definition from the backend.
+    async getDefinition(word) {
+      try {
+        const response = await definition.get(`${word}`);
+        const results = response.data;
+        
+        if (results && results.length) {
+          // Extract the first sentence of the first definition
+          let firstSentence = results[0].def.split('. ')[0];
+          if (!firstSentence.endsWith('.')) {
+            firstSentence += '.';
+          }
+          this.definition = [firstSentence];
+        } else {
+          this.definition = ["Definition not found."];
+        }
+      } catch (error) {
+        console.error("Error fetching definition:", error);
+        this.definition = ["Definition not found."];
+      }
+    }
+  }
+};
+</script>
 
 <style lang="scss" scoped>
 .wordsearch-container {

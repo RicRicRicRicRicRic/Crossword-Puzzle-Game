@@ -10,6 +10,7 @@ const httpLogger = require('./middlewares/pinoHttpLogger');
 const errorHandler = require('./middlewares/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const wordRoutes = require('./routes/wordsearchRoutes');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // API routes
 app.use('/api', authRoutes);
 app.use('/api', profileRoutes);
+app.use('/api/words', wordRoutes);
 
 // Confirm if server is running
 app.get('/', (req, res) => {
