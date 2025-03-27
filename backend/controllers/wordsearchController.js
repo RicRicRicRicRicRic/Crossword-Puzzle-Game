@@ -1,32 +1,47 @@
-// controllers/wordsearchController.js
+//controllers/wordsearchController.js
 const fs = require('fs');
 const path = require('path');
 const WordNet = require('node-wordnet');
 const wordnet = new WordNet();
 
-let wordArray = [];
+const dictPath = path.join(__dirname, '..', 'node_modules', 'wndb-with-exceptions', 'dict');
 
-// Dynamically import the word-list module (ES Module)
-(async () => {
-  try {
-    const wordListModule = await import('word-list');
-    // The package exports the path as the default export
-    const wordListPath = wordListModule.default;
-    
-    fs.readFile(wordListPath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error loading word list:', err);
-      } else {
-        wordArray = data.split('\n');
-        console.log(`Loaded ${wordArray.length} words for suggestions.`);
-      }
-    });
-  } catch (err) {
-    console.error('Error importing word-list:', err);
-  }
-})();
+let wordNetWords = [];
 
-// Lookup function for word definitions using WordNet
+function loadWordNetWords() {
+  const indexFiles = ['index.noun','index.verb','index.adj','index.adv','index.sense'];
+  const words = new Set();
+
+  indexFiles.forEach((file) => {
+    const filePath = path.join(dictPath, file);
+    try {
+      const data = fs.readFileSync(filePath, 'utf8');
+      const lines = data.split('\n').filter(line => line && !line.startsWith('  '));
+      lines.forEach(line => {
+        const tokens = line.split(/\s+/);
+        if (tokens.length && tokens[0] && tokens[0] !== '') {
+          const word = tokens[0];
+          if (
+            !word.includes('_') &&
+            !word.includes('-') &&
+            !word.includes('.') &&
+            !word.includes("'") &&
+            !word.includes(":")
+          ) {
+            words.add(word);
+          }
+        }
+      });
+    } catch (err) {
+      console.error(`Error reading file ${filePath}:`, err);
+    }
+  });
+  return Array.from(words);
+}
+
+wordNetWords = loadWordNetWords();
+console.log(`Loaded ${wordNetWords.length} words from WordNet for suggestions.`);
+
 exports.lookup = (req, res, next) => {
   const word = req.params.word;
   wordnet.lookup(word, (err, definitions) => {
@@ -40,41 +55,15 @@ exports.lookup = (req, res, next) => {
   });
 };
 
-// Suggestions function: Only return words that WordNet can define
 exports.suggestions = async (req, res, next) => {
   const query = req.query.query;
   if (!query) {
     return res.status(400).json({ error: 'No query provided' });
   }
   
-  // First, filter candidate words that start with the query (case-insensitive)
-  const candidateWords = wordArray
+  const suggestions = wordNetWords
     .filter(word => word.toLowerCase().startsWith(query.toLowerCase()))
-    .slice(0, 20);
+    .slice(0, 50);
   
-  let validSuggestions = [];
-  
-  // Helper function to check if a word has a definition in WordNet
-  const lookupWord = (word) => new Promise((resolve) => {
-    wordnet.lookup(word, (err, definitions) => {
-      if (err || !definitions || definitions.length === 0) {
-        resolve(false);
-      } else {
-        resolve(true);
-      }
-    });
-  });
-  
-  // Check each candidate word asynchronously
-  await Promise.all(
-    candidateWords.map(async (word) => {
-      const isValid = await lookupWord(word);
-      if (isValid) {
-        validSuggestions.push(word);
-      }
-    })
-  );
-  
-  // Return up to 10 valid suggestions
-  res.json(validSuggestions.slice(0, 10));
+  res.json(suggestions);
 };

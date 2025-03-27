@@ -1,4 +1,67 @@
 //components/PlayGame/WordSearch.vue
+
+<script>
+import { definition, wordSuggest } from '@/services/dictionary';
+
+export default {
+  name: "WordSearch",
+  data() {
+    return {
+      searchQuery: '',
+      suggestions: [],
+      definition: null,
+      selectedWord: '',
+      showDropdown: false,
+    };
+  },
+  methods: {
+    async onInput() {
+      if (this.searchQuery.length > 0) {
+        try {
+          const response = await wordSuggest.get('', {
+            params: { query: this.searchQuery }
+          });
+          this.suggestions = response.data;
+          this.showDropdown = this.suggestions.length > 0;
+        } catch (error) {
+          console.error("Error fetching suggestions:", error);
+          this.suggestions = [];
+          this.showDropdown = false;
+        }
+      } else {
+        this.suggestions = [];
+        this.showDropdown = false;
+      }
+    },
+    selectWord(word) {
+      this.searchQuery = word;
+      this.selectedWord = word;
+      this.showDropdown = false;
+      this.getDefinition(word);
+    },
+    async getDefinition(word) {
+      try {
+        const response = await definition.get(`${word}`);
+        const results = response.data;
+        
+        if (results && results.length) {
+          let firstSentence = results[0].def.split('. ')[0];
+          if (!firstSentence.endsWith('.')) {
+            firstSentence += '.';
+          }
+          this.definition = [firstSentence];
+        } else {
+          this.definition = ["Definition not found."];
+        }
+      } catch (error) {
+        console.error("Error fetching definition:", error);
+        this.definition = ["Definition not found."];
+      }
+    }
+  }
+};
+</script>
+
 <template>
   <div class="wordsearch-container">
     <div class="input-box">
@@ -19,77 +82,11 @@
       </ul>
     </div>
     <div v-if="definition" class="definition">
-      <h3>Definition for "{{ selectedWord }}"</h3>
+      <h3>{{ selectedWord }}</h3>
       <p v-for="(def, idx) in definition" :key="idx">{{ def }}</p>
     </div>
   </div>
 </template>
-
-<script>
-import { definition, wordSuggest } from '@/services/dictionary';
-
-export default {
-  name: "WordSearch",
-  data() {
-    return {
-      searchQuery: '',
-      suggestions: [],
-      definition: null,
-      selectedWord: '',
-      showDropdown: false,
-    };
-  },
-  methods: {
-    // Fetch suggestions from the backend based on the search query.
-    async onInput() {
-      if (this.searchQuery.length > 0) {
-        try {
-          const response = await wordSuggest.get('', {
-            params: { query: this.searchQuery }
-          });
-          this.suggestions = response.data;
-          this.showDropdown = this.suggestions.length > 0;
-        } catch (error) {
-          console.error("Error fetching suggestions:", error);
-          this.suggestions = [];
-          this.showDropdown = false;
-        }
-      } else {
-        this.suggestions = [];
-        this.showDropdown = false;
-      }
-    },
-    // When a word is selected, update the input and fetch its definition.
-    selectWord(word) {
-      this.searchQuery = word;
-      this.selectedWord = word;
-      this.showDropdown = false;
-      this.getDefinition(word);
-    },
-    // Fetch the definition from the backend.
-    async getDefinition(word) {
-      try {
-        const response = await definition.get(`${word}`);
-        const results = response.data;
-        
-        if (results && results.length) {
-          // Extract the first sentence of the first definition
-          let firstSentence = results[0].def.split('. ')[0];
-          if (!firstSentence.endsWith('.')) {
-            firstSentence += '.';
-          }
-          this.definition = [firstSentence];
-        } else {
-          this.definition = ["Definition not found."];
-        }
-      } catch (error) {
-        console.error("Error fetching definition:", error);
-        this.definition = ["Definition not found."];
-      }
-    }
-  }
-};
-</script>
 
 <style lang="scss" scoped>
 .wordsearch-container {
