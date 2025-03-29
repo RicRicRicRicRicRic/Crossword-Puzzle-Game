@@ -57,6 +57,14 @@ export default {
         console.error("Error fetching definition:", error);
         this.definition = ["Definition not found."];
       }
+    },
+    addWord(category) {
+      // Emit an event with the word, definition, and category.
+      this.$emit('word-added', {
+        word: this.selectedWord,
+        definition: this.definition ? this.definition[0] : "Definition not found.",
+        category,
+      });
     }
   }
 };
@@ -88,8 +96,10 @@ export default {
       </div>
     </div>
     <div class="button-container">
-      <button>Add in Across</button>
-      <button>Add in Down</button>
+      <!-- Emit the event with category "across" -->
+      <button @click="addWord('across')">Add in Across</button>
+      <!-- Emit the event with category "down" -->
+      <button @click="addWord('down')">Add in Down</button>
     </div>
   </div>
 </template>
