@@ -20,7 +20,7 @@ export default {
     }
   },
   created() {
-    const savedPage = localStorage.getItem('dashboardSelectedPage');
+    const savedPage = sessionStorage.getItem('dashboardSelectedPage');
     if (savedPage) {
       this.handleButtonClick(savedPage, false);
     }
@@ -40,7 +40,7 @@ export default {
         this.currentView = markRaw(Leaderboards);
       }
       if (store) {
-        localStorage.setItem('dashboardSelectedPage', text);
+        sessionStorage.setItem('dashboardSelectedPage', text);
       }
     }
   }

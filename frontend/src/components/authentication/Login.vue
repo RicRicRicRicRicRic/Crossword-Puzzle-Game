@@ -18,6 +18,7 @@ export default {
                 this.$store.commit('setUser', response.data.user);
                 this.$store.commit('setToken', response.data.token);
                 this.$router.push({ name: 'DashboardPage' });
+                sessionStorage.removeItem('dashboardSelectedPage');
             } catch (error) {
                 if (error.response && error.response.data && error.response.data.error) {
                 alert(error.response.data.error);
