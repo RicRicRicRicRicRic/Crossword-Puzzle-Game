@@ -1,4 +1,5 @@
 //components/PlayGame/GameGrid.vue
+
 <script>
 export default {
   name: "GameGrid",
@@ -20,6 +21,10 @@ export default {
         height: '100%',
       };
     },
+    timerMinutes() {
+      const fraction = (this.gridSize - 9) / (23 - 9);
+      return Math.round(5 + fraction * (20 - 5));
+    },
   },
   watch: {
     gridSize(newValue) {
@@ -31,15 +36,18 @@ export default {
 
 <template>
   <div class="gamegrid-container">
-    <div class="slider-container">
-      <label for="gridSizeSlider">Grid Size: {{ gridSize }} x {{ gridSize }}</label>
-      <input
-        id="gridSizeSlider"
-        type="range"
-        min="9"
-        max="23"
-        v-model.number="gridSize"
-      />
+    <div class="controls-container">
+      <div class="slider-container">
+        <label for="gridSizeSlider">Grid Size: {{ gridSize }} x {{ gridSize }}</label>
+        <input
+          id="gridSizeSlider"
+          type="range"
+          min="9"
+          max="23"
+          v-model.number="gridSize"
+        />
+      </div>
+        <label>Timer: {{ timerMinutes }} minutes</label>
     </div>
 
     <div class="grid" :style="gridStyle">
@@ -60,12 +68,20 @@ export default {
   width: 100%;
 }
 
+.controls-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  gap: 2.5rem;
+}
+
 .slider-container {
-  margin-bottom: 10px;
-  text-align: center;
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
   input[type="range"] {
-    width: 80%;
+    width: 350px;
   }
 }
 

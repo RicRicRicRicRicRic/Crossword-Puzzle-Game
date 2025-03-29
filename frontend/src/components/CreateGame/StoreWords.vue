@@ -12,7 +12,7 @@ export default {
       <div class="column">
         <div class="across">
           <div class="header">
-            <h4>Across</h4>
+            <h4>Across Definition</h4>
           </div>
 
         </div>
@@ -20,7 +20,7 @@ export default {
       <div class="column">
         <div class="down">
           <div class="header">
-            <h4>Down</h4>
+            <h4>Down Definition</h4>
           </div>
 
         </div>
@@ -31,7 +31,7 @@ export default {
       <div class="column">
         <div class="across">
           <div class="header">
-            <h4>Across</h4>
+            <h4>Across words</h4>
           </div>
 
         </div>
@@ -39,7 +39,7 @@ export default {
       <div class="column">
         <div class="down">
           <div class="header">
-            <h4>Down</h4>
+            <h4>Down words</h4>
           </div>
 
         </div>
