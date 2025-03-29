@@ -83,21 +83,35 @@ export default {
     </div>
     <div v-if="definition" class="definition">
       <h3>{{ selectedWord }}</h3>
-      <p v-for="(def, idx) in definition" :key="idx">{{ def }}</p>
+      <div class="definition-content">
+        <p v-for="(def, idx) in definition" :key="idx">{{ def }}</p>
+      </div>
+    </div>
+    <div class="button-container">
+      <button>Add in Across</button>
+      <button>Add in Down</button>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .wordsearch-container {
+  height: 100%;
+  overflow: hidden;
+  
   .input-box {
+    width: 90%;
+    margin: 10px auto 20px; 
     position: relative;
+    border-bottom: 2px solid;
+    
     input {
       width: 100%;
       padding: 10px;
       font-size: 16px;
       box-sizing: border-box;
     }
+    
     .dropdown {
       list-style: none;
       margin: 0;
@@ -110,19 +124,60 @@ export default {
       border: 1px solid #ccc;
       max-height: 150px;
       overflow-y: auto;
+      
       li {
         padding: 10px;
         cursor: pointer;
+        
         &:hover {
           background: #eee;
         }
       }
     }
   }
+
   .definition {
-    margin-top: 20px;
+    width: 90%;
+    margin: 0 auto 20px; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    
     h3 {
-      margin-bottom: 10px;
+      margin: 0;
+    }
+    
+    .definition-content {
+      margin-top: 5px;
+      overflow-y: auto;
+      flex: 1;
+      
+      p {
+        margin-top: 5px;
+      }
+    }
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      
+      &:hover {
+        background-color: #f0f0f0;
+      }
     }
   }
 }

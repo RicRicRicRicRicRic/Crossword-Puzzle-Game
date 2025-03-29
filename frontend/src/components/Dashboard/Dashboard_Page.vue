@@ -14,13 +14,23 @@ export default {
     ...mapState(['user'])
   },
   data() {
-  return {
-    headerText: 'Play a game',
-    currentView: markRaw(PlayGame)
+    return {
+      headerText: 'Play a game',
+      currentView: markRaw(PlayGame)
+    }
+  },
+  created() {
+    const savedPage = localStorage.getItem('dashboardSelectedPage');
+    if (savedPage) {
+      this.handleButtonClick(savedPage, false);
     }
   },
   methods: {
-    handleButtonClick(text) {
+    /**
+     * @param {string} text 
+     * @param {boolean} store 
+     */
+    handleButtonClick(text, store = true) {
       this.headerText = text;
       if (text === 'Play a game') {
         this.currentView = markRaw(PlayGame);
@@ -28,6 +38,9 @@ export default {
         this.currentView = markRaw(CreateGame);
       } else if (text === 'Leaderboards') {
         this.currentView = markRaw(Leaderboards);
+      }
+      if (store) {
+        localStorage.setItem('dashboardSelectedPage', text);
       }
     }
   }
@@ -57,8 +70,9 @@ export default {
       {{ headerText }}
     </div>
     <div class="dashboard-panel">
-
-      <component :is="currentView" />
+      <keep-alive>
+        <component :is="currentView" />
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -146,4 +160,3 @@ export default {
   align-items: center;
 }
 </style>
-
