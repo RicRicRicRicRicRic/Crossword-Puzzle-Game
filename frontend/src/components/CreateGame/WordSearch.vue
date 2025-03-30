@@ -1,71 +1,85 @@
 //components/PlayGame/WordSearch.vue
 
 <script>
+import { ref } from 'vue';
+import { useStore } from 'vuex';
 import { definition, wordSuggest } from '@/services/dictionary';
 
 export default {
-  name: "WordSearch",
-  data() {
-    return {
-      searchQuery: '',
-      suggestions: [],
-      definition: null,
-      selectedWord: '',
-      showDropdown: false,
-    };
-  },
-  methods: {
-    async onInput() {
-      if (this.searchQuery.length > 0) {
+  setup() {
+    const store = useStore();
+    const searchQuery = ref('');
+    const suggestions = ref([]);
+    const definitionText = ref(null);
+    const selectedWord = ref('');
+    const showDropdown = ref(false);
+
+    async function onInput() {
+      if (searchQuery.value.length > 0) {
         try {
-          const response = await wordSuggest.get('', {
-            params: { query: this.searchQuery }
-          });
-          this.suggestions = response.data;
-          this.showDropdown = this.suggestions.length > 0;
+          const response = await wordSuggest.get('', { params: { query: searchQuery.value } });
+          suggestions.value = response.data;
+          showDropdown.value = suggestions.value.length > 0;
         } catch (error) {
           console.error("Error fetching suggestions:", error);
-          this.suggestions = [];
-          this.showDropdown = false;
+          suggestions.value = [];
+          showDropdown.value = false;
         }
       } else {
-        this.suggestions = [];
-        this.showDropdown = false;
+        suggestions.value = [];
+        showDropdown.value = false;
       }
-    },
-    selectWord(word) {
-      this.searchQuery = word;
-      this.selectedWord = word;
-      this.showDropdown = false;
-      this.getDefinition(word);
-    },
-    async getDefinition(word) {
+    }
+
+    function selectWord(word) {
+      searchQuery.value = word;
+      selectedWord.value = word;
+      showDropdown.value = false;
+      getDefinition(word);
+    }
+
+    async function getDefinition(word) {
       try {
         const response = await definition.get(`${word}`);
         const results = response.data;
-        
         if (results && results.length) {
           let firstSentence = results[0].def.split('. ')[0];
           if (!firstSentence.endsWith('.')) {
             firstSentence += '.';
           }
-          this.definition = [firstSentence];
+          definitionText.value = [firstSentence];
         } else {
-          this.definition = ["Definition not found."];
+          definitionText.value = ["Definition not found."];
         }
       } catch (error) {
         console.error("Error fetching definition:", error);
-        this.definition = ["Definition not found."];
+        definitionText.value = ["Definition not found."];
       }
-    },
-    addWord(category) {
-      this.$emit('word-added', {
-        word: this.selectedWord,
-        definition: this.definition ? this.definition[0] : "Definition not found.",
+    }
+
+    function addWord(category) {
+      if (!selectedWord.value) {
+        alert("Please select a word first.");
+        return;
+      }
+      store.dispatch('addWord', {
+        word: selectedWord.value,
+        definition: definitionText.value ? definitionText.value[0] : "Definition not found.",
         category,
       });
     }
-  }
+
+    return {
+      searchQuery,
+      suggestions,
+      definitionText,
+      selectedWord,
+      showDropdown,
+      onInput,
+      selectWord,
+      addWord,
+    };
+  },
 };
 </script>
 
@@ -88,13 +102,13 @@ export default {
         </li>
       </ul>
     </div>
-    <div v-if="definition" class="definition">
+    <div v-if="definitionText" class="definition">
       <div class="selected-word">
         <h3>{{ selectedWord }}</h3>
         <span>({{ selectedWord.length }} letters)</span>
       </div>
       <div class="definition-content">
-        <p v-for="(def, idx) in definition" :key="idx">{{ def }}</p>
+        <p v-for="(def, idx) in definitionText" :key="idx">{{ def }}</p>
       </div>
     </div>
     <div class="button-container">

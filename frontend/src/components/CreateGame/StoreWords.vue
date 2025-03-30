@@ -1,93 +1,38 @@
 //components/PlayGame/StoreWords.vue
 
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+
 export default {
-  name: "StoreWords",
-  data() {
-    return {
-      acrossWords: [],
-      downWords: [],
-      selectedWord: null, // only updated on explicit click
-    };
-  },
-  methods: {
-    wordExists(word) {
-      const existsInAcross = this.acrossWords.some(item => item.word === word);
-      const existsInDown = this.downWords.some(item => item.word === word);
-      return existsInAcross || existsInDown;
-    },
-    addWord(wordData) {
-      // Simply add the word; do not alter selectedWord.
-      if (wordData.category === "across") {
-        this.acrossWords.push(wordData);
-      } else if (wordData.category === "down") {
-        this.downWords.push(wordData);
-      }
-    },
-    removeWord(category, index) {
-      let removedWord = null;
-      if (category === "across") {
-        removedWord = this.acrossWords.splice(index, 1)[0];
-      } else if (category === "down") {
-        removedWord = this.downWords.splice(index, 1)[0];
-      }
-      if (removedWord) {
-        if (this.selectedWord === removedWord.word) {
-          this.selectedWord = null;
-        }
-        this.$emit("word-removed", { word: removedWord.word, category });
-      }
-    },
-    updateWordDirection(wordText, newDirection) {
-      let indexAcross = this.acrossWords.findIndex(item => item.word === wordText);
-      let indexDown = this.downWords.findIndex(item => item.word === wordText);
-      let wordData = null;
-      if (indexAcross !== -1) {
-        wordData = this.acrossWords.splice(indexAcross, 1)[0];
-      } else if (indexDown !== -1) {
-        wordData = this.downWords.splice(indexDown, 1)[0];
-      }
-      if (wordData) {
-        wordData.category = newDirection;
-        if (newDirection === "across") {
-          this.acrossWords.push(wordData);
-        } else {
-          this.downWords.push(wordData);
-        }
-      }
-    },
-    // Called only on explicit click.
-    selectWord(word, category) {
-      this.selectedWord = word;
-      this.$emit("word-selected", { word, category });
+  setup() {
+    const store = useStore();
+    const acrossWords = computed(() => store.state.acrossWords);
+    const downWords = computed(() => store.state.downWords);
+
+    function remove(category, index) {
+      const word =
+        category === 'across'
+          ? store.state.acrossWords[index].word
+          : store.state.downWords[index].word;
+      store.dispatch('removeWord', word);
     }
-  },
-  mounted() {
-    const storedAcross = sessionStorage.getItem("acrossWords");
-    const storedDown = sessionStorage.getItem("downWords");
-    if (storedAcross) {
-      this.acrossWords = JSON.parse(storedAcross);
+
+    function selectWord(word) {
+      store.dispatch('selectWord', word);
     }
-    if (storedDown) {
-      this.downWords = JSON.parse(storedDown);
+
+    function isSelected(word) {
+      const selected =
+        store.state.placedWords[store.state.selectedWordIndex]?.word || '';
+      return selected === word;
     }
-  },
-  watch: {
-    acrossWords: {
-      handler(newVal) {
-        sessionStorage.setItem("acrossWords", JSON.stringify(newVal));
-      },
-      deep: true,
-    },
-    downWords: {
-      handler(newVal) {
-        sessionStorage.setItem("downWords", JSON.stringify(newVal));
-      },
-      deep: true,
-    },
+
+    return { acrossWords, downWords, remove, selectWord, isSelected };
   },
 };
 </script>
+
 
 <template>
   <div class="store-words-container">
@@ -103,8 +48,8 @@ export default {
               v-for="(item, index) in acrossWords"
               :key="index"
               class="definition-item"
-              @click="selectWord(item.word, 'across')"
-              :class="{ selected: selectedWord === item.word }"
+              @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }"
             >
               <strong>{{ index + 1 }}. </strong>{{ item.definition }}
             </li>
@@ -121,8 +66,8 @@ export default {
               v-for="(item, index) in downWords"
               :key="index"
               class="definition-item"
-              @click="selectWord(item.word, 'down')"
-              :class="{ selected: selectedWord === item.word }"
+              @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }"
             >
               <strong>{{ index + 1 }}. </strong>{{ item.definition }}
             </li>
@@ -142,11 +87,11 @@ export default {
               v-for="(item, index) in acrossWords"
               :key="index"
               class="word-item"
-              @click="selectWord(item.word, 'across')"
-              :class="{ selected: selectedWord === item.word }"
+              @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }"
             >
               <strong>{{ index + 1 }}. </strong>{{ item.word }}
-              <button @click.stop="removeWord('across', index)">−</button>
+              <button @click.stop="remove('across', index)">−</button>
             </li>
           </ul>
         </div>
@@ -161,11 +106,11 @@ export default {
               v-for="(item, index) in downWords"
               :key="index"
               class="word-item"
-              @click="selectWord(item.word, 'down')"
-              :class="{ selected: selectedWord === item.word }"
+              @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }"
             >
               <strong>{{ index + 1 }}. </strong>{{ item.word }}
-              <button @click.stop="removeWord('down', index)">−</button>
+              <button @click.stop="remove('down', index)">−</button>
             </li>
           </ul>
         </div>
@@ -173,7 +118,6 @@ export default {
     </div>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .store-words-container {

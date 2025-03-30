@@ -1,12 +1,31 @@
 //components/PlayGame/EditorControls.vue
 
 <script>
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+
 export default {
-  name: "EditorControls",
-  data() {
-    return {
-      activeTab: "controls", 
-    };
+  setup() {
+    const store = useStore();
+    const activeTab = ref('controls');
+
+    function move(direction) {
+      store.dispatch('moveWord', direction);
+    }
+
+    function setDirection(newDirection) {
+      store.dispatch('setWordDirection', newDirection);
+    }
+
+    function saveGame() {
+
+    }
+
+    function resetGame() {
+
+    }
+
+    return { activeTab, move, setDirection, saveGame, resetGame };
   },
 };
 </script>
@@ -25,31 +44,28 @@ export default {
         Save
       </button>
     </div>
-
     <div class="content">
       <div v-if="activeTab === 'controls'">
         <div class="arrow-keys">
-          <button class="arrow up" @click="$emit('move-word', 'up')">🢁</button>
+          <button class="arrow up" @click="move('up')">🢁</button>
           <div class="middle-row">
-            <button class="arrow left" @click="$emit('move-word', 'left')">🢀</button>
-            <button class="arrow right" @click="$emit('move-word', 'right')">🢂</button>
+            <button class="arrow left" @click="move('left')">🢀</button>
+            <button class="arrow right" @click="move('right')">🢂</button>
           </div>
-          <button class="arrow down" @click="$emit('move-word', 'down')">🢃</button>
+          <button class="arrow down" @click="move('down')">🢃</button>
         </div>
         <div class="direction-buttons">
-          <button @click="$emit('set-direction', 'across')">Set as Across</button>
-          <button @click="$emit('set-direction', 'down')">Set as Down</button>
+          <button @click="setDirection('across')">Set as Across</button>
+          <button @click="setDirection('down')">Set as Down</button>
         </div>
       </div>
-
       <div v-else-if="activeTab === 'save'" class="save-controls">
-        <button>Save Game</button>
-        <button>Reset Game</button>
+        <button @click="saveGame">Save Game</button>
+        <button @click="resetGame">Reset Game</button>
       </div>
     </div>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .editor-controls {
