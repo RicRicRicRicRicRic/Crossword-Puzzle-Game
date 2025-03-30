@@ -89,7 +89,10 @@ export default {
       </ul>
     </div>
     <div v-if="definition" class="definition">
-      <h3>{{ selectedWord }} ({{ selectedWord.length }} letters)</h3>
+      <div class="selected-word">
+        <h3>{{ selectedWord }}</h3>
+        <span>({{ selectedWord.length }} letters)</span>
+      </div>
       <div class="definition-content">
         <p v-for="(def, idx) in definition" :key="idx">{{ def }}</p>
       </div>

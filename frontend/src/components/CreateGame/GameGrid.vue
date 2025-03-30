@@ -54,8 +54,14 @@ export default {
   },
   watch: {
     gridSize(newValue, oldValue) {
+      // When reducing the grid, ensure that every placed word is fully within the new grid boundaries.
       if (newValue < oldValue) {
         const cannotFit = this.placedWords.some(word => {
+          // Check if the starting position is out-of-bound.
+          if (word.position.row >= newValue || word.position.col >= newValue) {
+            return true;
+          }
+          // Check if the word, based on its orientation, extends beyond the new grid size.
           if (word.category === 'across') {
             return (word.position.col + word.word.length) > newValue;
           } else if (word.category === 'down') {
@@ -65,6 +71,7 @@ export default {
         });
         if (cannotFit) {
           alert("Cannot make grid smaller because one or more words do not fit in the new size. Please remove those words first.");
+          // Revert to the old grid size.
           this.gridSize = oldValue;
           return;
         }
@@ -219,6 +226,7 @@ export default {
   background-color: #fff;
 }
 
+/* Conflict: when overlapping letters differ */
 .grid-cell.conflict {
   background-color: #ffcccc;
 }

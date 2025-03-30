@@ -14,7 +14,7 @@ export default {
   },
   data() {
     return {
-      selectedWordIndex: null, 
+      selectedWordIndex: null,
     };
   },
   methods: {
@@ -34,15 +34,25 @@ export default {
       }
     },
     moveSelectedWord(direction) {
-      if (this.selectedWordIndex !== null) {
+      if (
+        this.selectedWordIndex !== null &&
+        this.$refs.gameGrid.placedWords[this.selectedWordIndex]
+      ) {
         this.$refs.gameGrid.moveWord(this.selectedWordIndex, direction);
+      } else {
+        this.selectedWordIndex = null;
       }
     },
     setSelectedWordDirection(direction) {
-      if (this.selectedWordIndex !== null) {
+      if (
+        this.selectedWordIndex !== null &&
+        this.$refs.gameGrid.placedWords[this.selectedWordIndex]
+      ) {
         this.$refs.gameGrid.setWordDirection(this.selectedWordIndex, direction);
         const wordText = this.$refs.gameGrid.placedWords[this.selectedWordIndex].word;
         this.$refs.storeWords.updateWordDirection(wordText, direction);
+      } else {
+        this.selectedWordIndex = null;
       }
     },
     handleWordRemoved({ word, category }) {
@@ -74,7 +84,6 @@ export default {
           <GameGrid ref="gameGrid" />
         </KeepAlive>
       </div>
-
       <div class="middle-column">
         <div class="top-half">
           <keep-alive>
@@ -89,7 +98,6 @@ export default {
           </keep-alive>
         </div>
       </div>
-
       <div class="right-column">
         <KeepAlive>
           <StoreWords 

@@ -7,7 +7,7 @@ export default {
     return {
       acrossWords: [],
       downWords: [],
-      selectedWord: null,
+      selectedWord: null, // only updated on explicit click
     };
   },
   methods: {
@@ -17,6 +17,7 @@ export default {
       return existsInAcross || existsInDown;
     },
     addWord(wordData) {
+      // Simply add the word; do not alter selectedWord.
       if (wordData.category === "across") {
         this.acrossWords.push(wordData);
       } else if (wordData.category === "down") {
@@ -55,7 +56,7 @@ export default {
         }
       }
     },
-
+    // Called only on explicit click.
     selectWord(word, category) {
       this.selectedWord = word;
       this.$emit("word-selected", { word, category });
@@ -92,7 +93,6 @@ export default {
   <div class="store-words-container">
     <!-- Top Section: Definitions -->
     <div class="section top-section">
-      <!-- Across Definitions -->
       <div class="column">
         <div class="across">
           <div class="header">
@@ -111,7 +111,6 @@ export default {
           </ul>
         </div>
       </div>
-      <!-- Down Definitions -->
       <div class="column">
         <div class="down">
           <div class="header">
@@ -131,10 +130,8 @@ export default {
         </div>
       </div>
     </div>
-
     <!-- Bottom Section: Words -->
     <div class="section bottom-section">
-      <!-- Across Words -->
       <div class="column">
         <div class="across">
           <div class="header">
@@ -154,7 +151,6 @@ export default {
           </ul>
         </div>
       </div>
-      <!-- Down Words -->
       <div class="column">
         <div class="down">
           <div class="header">
@@ -177,6 +173,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 .store-words-container {
