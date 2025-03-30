@@ -1,27 +1,33 @@
 // src/store/modules/crossword.js
-const gridSizeFromStorage = localStorage.getItem('gridSize');
+const gridSizeFromStorage = sessionStorage.getItem('gridSize');
+const placedWordsFromStorage = sessionStorage.getItem('placedWords');
+const acrossWordsFromStorage = sessionStorage.getItem('acrossWords');
+const downWordsFromStorage = sessionStorage.getItem('downWords');
 
 export const crosswordState = {
   gridSize: gridSizeFromStorage ? Number(gridSizeFromStorage) : 15,
-  placedWords: [],
-  acrossWords: [],
-  downWords: [],
+  placedWords: placedWordsFromStorage ? JSON.parse(placedWordsFromStorage) : [],
+  acrossWords: acrossWordsFromStorage ? JSON.parse(acrossWordsFromStorage) : [],
+  downWords: downWordsFromStorage ? JSON.parse(downWordsFromStorage) : [],
   selectedWordIndex: null,
 };
 
 export const crosswordMutations = {
   setGridSize(state, newSize) {
     state.gridSize = newSize;
-    localStorage.setItem('gridSize', newSize);
+    sessionStorage.setItem('gridSize', newSize);
   },
   addPlacedWord(state, wordData) {
     state.placedWords.push(wordData);
+    sessionStorage.setItem('placedWords', JSON.stringify(state.placedWords));
   },
   addStoredWord(state, wordData) {
     if (wordData.category === 'across') {
       state.acrossWords.push(wordData);
+      sessionStorage.setItem('acrossWords', JSON.stringify(state.acrossWords));
     } else if (wordData.category === 'down') {
       state.downWords.push(wordData);
+      sessionStorage.setItem('downWords', JSON.stringify(state.downWords));
     }
   },
   setSelectedWordIndex(state, index) {
@@ -30,6 +36,9 @@ export const crosswordMutations = {
   updateWordDirection(state, { wordText, newDirection }) {
     state.acrossWords = state.acrossWords.filter(item => item.word !== wordText);
     state.downWords = state.downWords.filter(item => item.word !== wordText);
+    // Persist changes
+    sessionStorage.setItem('acrossWords', JSON.stringify(state.acrossWords));
+    sessionStorage.setItem('downWords', JSON.stringify(state.downWords));
     const placedWord = state.placedWords.find(item => item.word === wordText);
     if (placedWord) {
       placedWord.category = newDirection;
@@ -38,21 +47,38 @@ export const crosswordMutations = {
       } else if (newDirection === 'down') {
         state.downWords.push(placedWord);
       }
+      sessionStorage.setItem('acrossWords', JSON.stringify(state.acrossWords));
+      sessionStorage.setItem('downWords', JSON.stringify(state.downWords));
     }
   },
   moveWord(state, { wordIndex, newPos }) {
     state.placedWords[wordIndex].position = newPos;
+    sessionStorage.setItem('placedWords', JSON.stringify(state.placedWords));
   },
   removeWord(state, wordText) {
     state.placedWords = state.placedWords.filter(item => item.word !== wordText);
     state.acrossWords = state.acrossWords.filter(item => item.word !== wordText);
     state.downWords = state.downWords.filter(item => item.word !== wordText);
+    sessionStorage.setItem('placedWords', JSON.stringify(state.placedWords));
+    sessionStorage.setItem('acrossWords', JSON.stringify(state.acrossWords));
+    sessionStorage.setItem('downWords', JSON.stringify(state.downWords));
     if (
       state.selectedWordIndex !== null &&
       state.placedWords[state.selectedWordIndex]?.word === wordText
     ) {
       state.selectedWordIndex = null;
     }
+  },
+  resetCrossword(state) {
+    state.gridSize = 15;
+    state.placedWords = [];
+    state.acrossWords = [];
+    state.downWords = [];
+    state.selectedWordIndex = null;
+    sessionStorage.removeItem('gridSize');
+    sessionStorage.removeItem('placedWords');
+    sessionStorage.removeItem('acrossWords');
+    sessionStorage.removeItem('downWords');
   },
 };
 
@@ -166,5 +192,8 @@ export const crosswordActions = {
     if (index !== -1) {
       commit('setSelectedWordIndex', index);
     }
+  },
+  resetCrossword({ commit }) {
+    commit('resetCrossword');
   },
 };

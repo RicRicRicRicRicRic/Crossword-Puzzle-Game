@@ -1,4 +1,5 @@
 //components/Authentication/Login.vue
+
 <script>
 import api from '@/services/api';
 
@@ -9,6 +10,9 @@ export default {
       password: ''
     };
   },
+  created() {
+    this.$store.dispatch('resetCrossword');
+  },
   methods: {
     async login() {
       try {
@@ -18,9 +22,6 @@ export default {
         });
         this.$store.commit('setUser', response.data.user);
         this.$store.commit('setToken', response.data.token);
-        sessionStorage.removeItem('acrossWords');
-        sessionStorage.removeItem('downWords');
-        sessionStorage.removeItem('placedWords'); 
         sessionStorage.removeItem('dashboardSelectedPage');
         this.$router.push({ name: 'DashboardPage' });
       } catch (error) {
