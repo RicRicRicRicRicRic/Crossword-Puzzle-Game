@@ -7,38 +7,82 @@ export default {
     return {
       acrossWords: [],
       downWords: [],
+      selectedWord: null,
     };
   },
   methods: {
+    wordExists(word) {
+      const existsInAcross = this.acrossWords.some(item => item.word === word);
+      const existsInDown = this.downWords.some(item => item.word === word);
+      return existsInAcross || existsInDown;
+    },
     addWord(wordData) {
-      if (
-        wordData.category === "down" &&
-        this.acrossWords.find((item) => item.word === wordData.word)
-      ) {
-        alert(`The word "${wordData.word}" already exists in across.`);
-        return;
-      }
-
       if (wordData.category === "across") {
-        if (this.acrossWords.find((item) => item.word === wordData.word)) {
-          alert(`The word "${wordData.word}" already exists.`);
-          return;
-        }
         this.acrossWords.push(wordData);
       } else if (wordData.category === "down") {
-        if (this.downWords.find((item) => item.word === wordData.word)) {
-          alert(`The word "${wordData.word}" already exists.`);
-          return;
-        }
         this.downWords.push(wordData);
       }
     },
     removeWord(category, index) {
+      let removedWord = null;
       if (category === "across") {
-        this.acrossWords.splice(index, 1);
+        removedWord = this.acrossWords.splice(index, 1)[0];
       } else if (category === "down") {
-        this.downWords.splice(index, 1);
+        removedWord = this.downWords.splice(index, 1)[0];
       }
+      if (removedWord) {
+        if (this.selectedWord === removedWord.word) {
+          this.selectedWord = null;
+        }
+        this.$emit("word-removed", { word: removedWord.word, category });
+      }
+    },
+    updateWordDirection(wordText, newDirection) {
+      let indexAcross = this.acrossWords.findIndex(item => item.word === wordText);
+      let indexDown = this.downWords.findIndex(item => item.word === wordText);
+      let wordData = null;
+      if (indexAcross !== -1) {
+        wordData = this.acrossWords.splice(indexAcross, 1)[0];
+      } else if (indexDown !== -1) {
+        wordData = this.downWords.splice(indexDown, 1)[0];
+      }
+      if (wordData) {
+        wordData.category = newDirection;
+        if (newDirection === "across") {
+          this.acrossWords.push(wordData);
+        } else {
+          this.downWords.push(wordData);
+        }
+      }
+    },
+
+    selectWord(word, category) {
+      this.selectedWord = word;
+      this.$emit("word-selected", { word, category });
+    }
+  },
+  mounted() {
+    const storedAcross = sessionStorage.getItem("acrossWords");
+    const storedDown = sessionStorage.getItem("downWords");
+    if (storedAcross) {
+      this.acrossWords = JSON.parse(storedAcross);
+    }
+    if (storedDown) {
+      this.downWords = JSON.parse(storedDown);
+    }
+  },
+  watch: {
+    acrossWords: {
+      handler(newVal) {
+        sessionStorage.setItem("acrossWords", JSON.stringify(newVal));
+      },
+      deep: true,
+    },
+    downWords: {
+      handler(newVal) {
+        sessionStorage.setItem("downWords", JSON.stringify(newVal));
+      },
+      deep: true,
     },
   },
 };
@@ -55,7 +99,13 @@ export default {
             <h4>Across Definition</h4>
           </div>
           <ul class="definitions">
-            <li v-for="(item, index) in acrossWords" :key="index" class="definition-item">
+            <li
+              v-for="(item, index) in acrossWords"
+              :key="index"
+              class="definition-item"
+              @click="selectWord(item.word, 'across')"
+              :class="{ selected: selectedWord === item.word }"
+            >
               <strong>{{ index + 1 }}. </strong>{{ item.definition }}
             </li>
           </ul>
@@ -68,7 +118,13 @@ export default {
             <h4>Down Definition</h4>
           </div>
           <ul class="definitions">
-            <li v-for="(item, index) in downWords" :key="index" class="definition-item">
+            <li
+              v-for="(item, index) in downWords"
+              :key="index"
+              class="definition-item"
+              @click="selectWord(item.word, 'down')"
+              :class="{ selected: selectedWord === item.word }"
+            >
               <strong>{{ index + 1 }}. </strong>{{ item.definition }}
             </li>
           </ul>
@@ -85,9 +141,15 @@ export default {
             <h4>Across Words</h4>
           </div>
           <ul class="words">
-            <li v-for="(item, index) in acrossWords" :key="index" class="word-item">
+            <li
+              v-for="(item, index) in acrossWords"
+              :key="index"
+              class="word-item"
+              @click="selectWord(item.word, 'across')"
+              :class="{ selected: selectedWord === item.word }"
+            >
               <strong>{{ index + 1 }}. </strong>{{ item.word }}
-              <button @click="removeWord('across', index)">−</button>
+              <button @click.stop="removeWord('across', index)">−</button>
             </li>
           </ul>
         </div>
@@ -99,9 +161,15 @@ export default {
             <h4>Down Words</h4>
           </div>
           <ul class="words">
-            <li v-for="(item, index) in downWords" :key="index" class="word-item">
+            <li
+              v-for="(item, index) in downWords"
+              :key="index"
+              class="word-item"
+              @click="selectWord(item.word, 'down')"
+              :class="{ selected: selectedWord === item.word }"
+            >
               <strong>{{ index + 1 }}. </strong>{{ item.word }}
-              <button @click="removeWord('down', index)">−</button>
+              <button @click.stop="removeWord('down', index)">−</button>
             </li>
           </ul>
         </div>
@@ -110,13 +178,12 @@ export default {
   </div>
 </template>
 
-
 <style lang="scss" scoped>
 .store-words-container {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .section {
@@ -156,7 +223,7 @@ export default {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    min-height: 0; 
+    min-height: 0;
   }
   
   .header {
@@ -167,28 +234,45 @@ export default {
     width: 100%;
     height: 40px;
     border-bottom: 2px solid;
-    flex-shrink: 0; 
+    flex-shrink: 0;
   }
   
   .definitions,
   .words {
     padding: 10px;
-    overflow-y: auto; 
+    overflow-y: auto;
     flex: 1;
-    margin: 0;       
-    list-style: none; 
+    margin: 0;
+    list-style: none;
   }
   
   .definition-item,
   .word-item {
     padding: 5px;
     border-bottom: 1px dashed #ccc;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: #d3d3d3; 
+    }
   }
-  .word-item{
+  
+  .word-item {
+    overflow-wrap: break-word; /* or word-wrap: break-word; */
+    word-break: break-all;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-}
+  
+  .selected {
+    background-color: #90ee90; 
+  }
+  
 
+  .selected:hover {
+    background-color: #006400;
+  }
+}
 </style>

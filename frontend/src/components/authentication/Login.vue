@@ -3,31 +3,35 @@
 import api from '@/services/api';
 
 export default {
-    data() {
-        return {
-            loginInput: '',
-            password: ''
-            };
-        },
-    methods: {
-        async login() {
-            try {
-                const response = await api.post('/login', {
-                username: this.loginInput,
-                password: this.password });
-                this.$store.commit('setUser', response.data.user);
-                this.$store.commit('setToken', response.data.token);
-                this.$router.push({ name: 'DashboardPage' });
-                sessionStorage.removeItem('dashboardSelectedPage');
-            } catch (error) {
-                if (error.response && error.response.data && error.response.data.error) {
-                alert(error.response.data.error);
-                } else {
-                alert('An error occurred. Please try again.');
-                }
-            }
+  data() {
+    return {
+      loginInput: '',
+      password: ''
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await api.post('/login', {
+          username: this.loginInput,
+          password: this.password
+        });
+        this.$store.commit('setUser', response.data.user);
+        this.$store.commit('setToken', response.data.token);
+        sessionStorage.removeItem('acrossWords');
+        sessionStorage.removeItem('downWords');
+        sessionStorage.removeItem('placedWords'); 
+        sessionStorage.removeItem('dashboardSelectedPage');
+        this.$router.push({ name: 'DashboardPage' });
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.error) {
+          alert(error.response.data.error);
+        } else {
+          alert('An error occurred. Please try again.');
         }
+      }
     }
+  }
 };
 </script>
 

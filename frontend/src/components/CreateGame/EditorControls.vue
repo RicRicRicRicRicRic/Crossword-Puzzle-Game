@@ -1,4 +1,5 @@
 //components/PlayGame/EditorControls.vue
+
 <script>
 export default {
   name: "EditorControls",
@@ -28,16 +29,16 @@ export default {
     <div class="content">
       <div v-if="activeTab === 'controls'">
         <div class="arrow-keys">
-          <button class="arrow up">🢁</button>
+          <button class="arrow up" @click="$emit('move-word', 'up')">🢁</button>
           <div class="middle-row">
-            <button class="arrow left">🢀</button>
-            <button class="arrow right">🢂</button>
+            <button class="arrow left" @click="$emit('move-word', 'left')">🢀</button>
+            <button class="arrow right" @click="$emit('move-word', 'right')">🢂</button>
           </div>
-          <button class="arrow down">🢃</button>
+          <button class="arrow down" @click="$emit('move-word', 'down')">🢃</button>
         </div>
         <div class="direction-buttons">
-          <button>Set as Across</button>
-          <button>Set as Down</button>
+          <button @click="$emit('set-direction', 'across')">Set as Across</button>
+          <button @click="$emit('set-direction', 'down')">Set as Down</button>
         </div>
       </div>
 
@@ -48,6 +49,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 .editor-controls {

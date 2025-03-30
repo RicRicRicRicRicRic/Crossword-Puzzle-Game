@@ -1,12 +1,10 @@
 //components/CreateGame/CreateGame_Page.vue
-
-<!-- components/CreateGame/CreateGame_Page.vue -->
 <script>
 import WordSearch from './WordSearch.vue';
 import EditorControls from './EditorControls.vue';
 import StoreWords from './StoreWords.vue';
 import GameGrid from './GameGrid.vue';
-  
+
 export default {
   components: {
     WordSearch,
@@ -14,10 +12,55 @@ export default {
     StoreWords,
     GameGrid,
   },
+  data() {
+    return {
+      selectedWordIndex: null, 
+    };
+  },
   methods: {
     handleWordAdded(wordData) {
-      // Pass the wordData to StoreWords component.
-      this.$refs.storeWords.addWord(wordData);
+      if (this.$refs.storeWords.wordExists(wordData.word)) {
+        alert(`The word "${wordData.word}" already exists in the stored words.`);
+        return;
+      }
+      const gridSize = this.$refs.gameGrid.gridSize;
+      if (wordData.word.length > gridSize) {
+        alert(`The word "${wordData.word}" is too long for the ${gridSize} x ${gridSize} grid.`);
+        return;
+      }
+      const added = this.$refs.gameGrid.addWordToGrid(wordData);
+      if (added) {
+        this.$refs.storeWords.addWord(wordData);
+      }
+    },
+    moveSelectedWord(direction) {
+      if (this.selectedWordIndex !== null) {
+        this.$refs.gameGrid.moveWord(this.selectedWordIndex, direction);
+      }
+    },
+    setSelectedWordDirection(direction) {
+      if (this.selectedWordIndex !== null) {
+        this.$refs.gameGrid.setWordDirection(this.selectedWordIndex, direction);
+        const wordText = this.$refs.gameGrid.placedWords[this.selectedWordIndex].word;
+        this.$refs.storeWords.updateWordDirection(wordText, direction);
+      }
+    },
+    handleWordRemoved({ word, category }) {
+      this.$refs.gameGrid.removeWordFromGrid(word);
+      if (
+        this.selectedWordIndex !== null &&
+        this.$refs.gameGrid.placedWords[this.selectedWordIndex]?.word === word
+      ) {
+        this.selectedWordIndex = null;
+      }
+    },
+    handleWordSelected({ word }) {
+      const index = this.$refs.gameGrid.placedWords.findIndex(
+        item => item.word === word
+      );
+      if (index !== -1) {
+        this.selectedWordIndex = index;
+      }
     }
   }
 };
@@ -28,7 +71,7 @@ export default {
     <div class="creategame-panel">
       <div class="left-column">
         <KeepAlive>
-          <GameGrid />
+          <GameGrid ref="gameGrid" />
         </KeepAlive>
       </div>
 
@@ -40,14 +83,19 @@ export default {
         </div>
         <div class="bottom-half">
           <keep-alive>
-            <EditorControls />
+            <EditorControls 
+              @move-word="moveSelectedWord" 
+              @set-direction="setSelectedWordDirection" />
           </keep-alive>
         </div>
       </div>
 
       <div class="right-column">
         <KeepAlive>
-          <StoreWords ref="storeWords" />
+          <StoreWords 
+            ref="storeWords" 
+            @word-removed="handleWordRemoved"
+            @word-selected="handleWordSelected" />
         </KeepAlive>
       </div>
     </div>

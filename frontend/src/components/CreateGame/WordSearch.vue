@@ -59,7 +59,6 @@ export default {
       }
     },
     addWord(category) {
-      // Emit an event with the word, definition, and category.
       this.$emit('word-added', {
         word: this.selectedWord,
         definition: this.definition ? this.definition[0] : "Definition not found.",
@@ -90,15 +89,13 @@ export default {
       </ul>
     </div>
     <div v-if="definition" class="definition">
-      <h3>{{ selectedWord }}</h3>
+      <h3>{{ selectedWord }} ({{ selectedWord.length }} letters)</h3>
       <div class="definition-content">
         <p v-for="(def, idx) in definition" :key="idx">{{ def }}</p>
       </div>
     </div>
     <div class="button-container">
-      <!-- Emit the event with category "across" -->
       <button @click="addWord('across')">Add in Across</button>
-      <!-- Emit the event with category "down" -->
       <button @click="addWord('down')">Add in Down</button>
     </div>
   </div>
