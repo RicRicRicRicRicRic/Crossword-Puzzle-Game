@@ -10,14 +10,19 @@ export default {
 
     const gridSize = computed(() => store.state.gridSize);
     const timerMinutes = computed(() => {
-      const fraction = (store.state.gridSize - 9) / (23 - 9);
+      const fraction = (store.state.gridSize - 9) / (20 - 9);
       return Math.round(5 + fraction * (20 - 5));
     });
+
     const cellDetails = computed(() => {
       const cells = Array.from({ length: store.state.gridSize * store.state.gridSize }, () => ({
-        letters: []
+        letters: [],
+        number: null,
       }));
       store.state.placedWords.forEach(word => {
+        const startRow = word.position.row;
+        const startCol = word.position.col;
+        const startIndex = startRow * store.state.gridSize + startCol;
         for (let i = 0; i < word.word.length; i++) {
           const row = word.position.row + (word.category === 'down' ? i : 0);
           const col = word.position.col + (word.category === 'across' ? i : 0);
@@ -26,10 +31,33 @@ export default {
             cells[cellIndex].letters.push(word.word[i]);
           }
         }
+        let numberLabel = '';
+        if (word.category === 'across') {
+          const indexInAcross = store.state.acrossWords.findIndex(item => item.word === word.word);
+          if (indexInAcross >= 0) {
+            numberLabel = 'a' + (indexInAcross + 1);
+          }
+        } else if (word.category === 'down') {
+          const indexInDown = store.state.downWords.findIndex(item => item.word === word.word);
+          if (indexInDown >= 0) {
+            numberLabel = 'd' + (indexInDown + 1);
+          }
+        }
+        if (cells[startIndex]) {
+          if (cells[startIndex].number) {
+            if (word.word[0].toLowerCase() === cells[startIndex].letters[0].toLowerCase()) {
+              cells[startIndex].number += ',' + numberLabel;
+            }
+          } else {
+            cells[startIndex].number = numberLabel;
+          }
+        }
       });
       cells.forEach(cell => {
-        cell.conflict = cell.letters.length > 1 && !cell.letters.every(letter => letter === cell.letters[0]);
+        cell.conflict =
+          cell.letters.length > 1 && !cell.letters.every(letter => letter === cell.letters[0]);
       });
+
       return cells;
     });
 
@@ -41,15 +69,22 @@ export default {
       height: '100%',
     }));
 
+    const cellFontSize = computed(() => {
+      const fraction = (store.state.gridSize - 9) / (20 - 9);
+      const maxFontSize = 24; 
+      const minFontSize = 14; 
+      const fontSize = minFontSize + (maxFontSize - minFontSize) * (1 - fraction);
+      return fontSize + 'px';
+    });
+
     function onGridSizeChange(newSize) {
       store.dispatch('setGridSize', Number(newSize));
     }
 
-    return { gridSize, timerMinutes, cellDetails, gridStyle, onGridSizeChange };
+    return { gridSize, timerMinutes, cellDetails, gridStyle, onGridSizeChange, cellFontSize };
   },
 };
 </script>
-
 
 <template>
   <div class="gamegrid-container">
@@ -60,7 +95,7 @@ export default {
           id="gridSizeSlider"
           type="range"
           min="9"
-          max="23"
+          max="20"
           :value="gridSize"
           @input="onGridSizeChange($event.target.value)"
         />
@@ -72,9 +107,13 @@ export default {
         v-for="(cell, index) in cellDetails"
         :key="index"
         class="grid-cell"
-        :class="{ conflict: cell.conflict }"
+        :class="{ conflict: cell.conflict, 'black-cell': cell.letters.length === 0 }"
+        :style="{ fontSize: cellFontSize }"
       >
-        {{ cell.letters[0] || '' }}
+        <!-- Number label in the upper left corner -->
+        <span v-if="cell.number" class="cell-number">{{ cell.number }}</span>
+        <!-- Display the letter (if any) centered in the cell -->
+        <span v-if="cell.letters.length > 0">{{ cell.letters[0] }}</span>
       </div>
     </div>
   </div>
@@ -113,7 +152,8 @@ export default {
 }
 
 .grid-cell {
-  border: 1px solid #ddd;
+  position: relative; /* Needed for absolute positioning of the number */
+  border: 1px solid #000;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -122,8 +162,19 @@ export default {
   background-color: #fff;
 }
 
-/* Conflict: when overlapping letters differ */
 .grid-cell.conflict {
-  background-color: #ffcccc;
+  background-color: #f16666;
+}
+
+.black-cell {
+  background-color: #292929;
+}
+
+.cell-number {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.7em;
+  padding: 0 2px;
 }
 </style>
