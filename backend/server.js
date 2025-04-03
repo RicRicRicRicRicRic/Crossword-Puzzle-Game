@@ -11,6 +11,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const wordRoutes = require('./routes/wordsearchRoutes');
+const crossword = require('./routes/crosswordRoutes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/api', authRoutes);
 app.use('/api', profileRoutes);
 app.use('/api/words', wordRoutes);
+app.use('/api',crossword)
 
 // Confirm if server is running
 app.get('/', (req, res) => {
