@@ -33,7 +33,6 @@ export default {
 };
 </script>
 
-
 <template>
   <div class="store-words-container">
     <!-- Top Section: Definitions -->

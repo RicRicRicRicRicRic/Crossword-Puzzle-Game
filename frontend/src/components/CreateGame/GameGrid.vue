@@ -9,10 +9,7 @@ export default {
     const store = useStore();
 
     const gridSize = computed(() => store.state.gridSize);
-    const timerMinutes = computed(() => {
-      const fraction = (store.state.gridSize - 9) / (20 - 9);
-      return Math.round(5 + fraction * (20 - 5));
-    });
+    const timerMinutes = computed(() => store.state.grid_timer);
 
     const cellDetails = computed(() => {
       const cells = Array.from({ length: store.state.gridSize * store.state.gridSize }, () => ({

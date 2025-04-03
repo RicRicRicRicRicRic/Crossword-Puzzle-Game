@@ -1,20 +1,32 @@
-// src/store/modules/crossword.js
+// src/store/modules/create_crossword.js
+import api from '@/services/api';
 const gridSizeFromStorage = sessionStorage.getItem('gridSize');
 const placedWordsFromStorage = sessionStorage.getItem('placedWords');
 const acrossWordsFromStorage = sessionStorage.getItem('acrossWords');
 const downWordsFromStorage = sessionStorage.getItem('downWords');
 
-export const crosswordState = {
-  gridSize: gridSizeFromStorage ? Number(gridSizeFromStorage) : 15,
+const computeTimer = gridSize => {
+  const fraction = (gridSize - 9) / (20 - 9);
+  return Math.round(5 + fraction * (20 - 5));
+};
+
+const initialGridSize = gridSizeFromStorage ? Number(gridSizeFromStorage) : 15;
+
+export const create_cwState = {
+  gridSize: initialGridSize,
   placedWords: placedWordsFromStorage ? JSON.parse(placedWordsFromStorage) : [],
   acrossWords: acrossWordsFromStorage ? JSON.parse(acrossWordsFromStorage) : [],
   downWords: downWordsFromStorage ? JSON.parse(downWordsFromStorage) : [],
   selectedWordIndex: null,
+  grid_timer: computeTimer(initialGridSize),
+  
 };
 
-export const crosswordMutations = {
+export const create_cwMutations = {
   setGridSize(state, newSize) {
     state.gridSize = newSize;
+    const fraction = (newSize - 9) / (20 - 9);
+    state.grid_timer = Math.round(5 + fraction * (20 - 5));
     sessionStorage.setItem('gridSize', newSize);
   },
   addPlacedWord(state, wordData) {
@@ -34,14 +46,18 @@ export const crosswordMutations = {
     state.selectedWordIndex = index;
   },
   updateWordDirection(state, { wordText, newDirection }) {
+
     state.acrossWords = state.acrossWords.filter(item => item.word !== wordText);
     state.downWords = state.downWords.filter(item => item.word !== wordText);
-    // Persist changes
+
     sessionStorage.setItem('acrossWords', JSON.stringify(state.acrossWords));
     sessionStorage.setItem('downWords', JSON.stringify(state.downWords));
+
     const placedWord = state.placedWords.find(item => item.word === wordText);
     if (placedWord) {
       placedWord.category = newDirection;
+      sessionStorage.setItem('placedWords', JSON.stringify(state.placedWords));
+      
       if (newDirection === 'across') {
         state.acrossWords.push(placedWord);
       } else if (newDirection === 'down') {
@@ -51,6 +67,7 @@ export const crosswordMutations = {
       sessionStorage.setItem('downWords', JSON.stringify(state.downWords));
     }
   },
+  
   moveWord(state, { wordIndex, newPos }) {
     state.placedWords[wordIndex].position = newPos;
     sessionStorage.setItem('placedWords', JSON.stringify(state.placedWords));
@@ -82,7 +99,7 @@ export const crosswordMutations = {
   },
 };
 
-export const crosswordActions = {
+export const create_cwActions = {
   setGridSize({ state, commit }, newSize) {
     const cannotFit = state.placedWords.some(word => {
       if (word.position.row >= newSize || word.position.col >= newSize) {
@@ -196,4 +213,68 @@ export const crosswordActions = {
   resetCrossword({ commit }) {
     commit('resetCrossword');
   },
+  saveGame({ state }) {
+    const gridSize = state.gridSize;
+    const grid_letters = Array.from({ length: gridSize }, () =>
+      Array(gridSize).fill(null)
+    );
+    const grid_cell_numbers = Array.from({ length: gridSize }, () =>
+      Array(gridSize).fill(null)
+    );
+  
+    state.placedWords.forEach(word => {
+      const startRow = word.position.row;
+      const startCol = word.position.col;
+      for (let i = 0; i < word.word.length; i++) {
+        const row = startRow + (word.category === 'down' ? i : 0);
+        const col = startCol + (word.category === 'across' ? i : 0);
+        if (row < gridSize && col < gridSize) {
+          grid_letters[row][col] = word.word[i];
+        }
+      }
+      let label = "";
+      if (word.category === "across") {
+        const idx = state.acrossWords.findIndex(item => item.word === word.word);
+        if (idx !== -1) label = "a" + (idx + 1);
+      } else if (word.category === "down") {
+        const idx = state.downWords.findIndex(item => item.word === word.word);
+        if (idx !== -1) label = "d" + (idx + 1);
+      }
+      if (grid_cell_numbers[startRow][startCol]) {
+        grid_cell_numbers[startRow][startCol] += "," + label;
+      } else {
+        grid_cell_numbers[startRow][startCol] = label;
+      }
+    });
+  
+    const payload = {
+      grid_size: gridSize,
+      grid_cell_numbers,
+      grid_letters,     
+      def_Across_data: state.acrossWords,
+      def_Down_data: state.downWords,
+      grid_timer: state.grid_timer 
+    };
+  
+    api.post('/saveGame', payload, {
+      headers: {
+        Authorization: `Bearer ${state.token}`
+      }
+    })
+    .then(response => {
+      if (response.data.success) {
+        alert(response.data.message);
+      } else {
+        alert("Failed to save game");
+      }
+    })
+    .catch(error => {
+      console.error("Error saving game: ", error);
+      alert("Error saving game.");
+    });
+    
+
+  }
+  
+
 };

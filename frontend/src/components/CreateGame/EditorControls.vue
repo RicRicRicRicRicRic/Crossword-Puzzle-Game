@@ -1,13 +1,17 @@
 //components/PlayGame/EditorControls.vue
-
 <script>
 import { ref } from 'vue';
 import { useStore } from 'vuex';
+import ConfirmationSave from './ConfirmationSave.vue';
 
 export default {
+  components: {
+    ConfirmationSave,
+  },
   setup() {
     const store = useStore();
     const activeTab = ref('controls');
+    const showConfirmation = ref(false);
 
     function move(direction) {
       store.dispatch('moveWord', direction);
@@ -18,14 +22,31 @@ export default {
     }
 
     function saveGame() {
-
+      showConfirmation.value = true;
     }
 
     function resetGame() {
-
     }
 
-    return { activeTab, move, setDirection, saveGame, resetGame };
+    function confirmSaveGame() {
+      console.log('Game saved!');
+      showConfirmation.value = false;
+    }
+
+    function cancelSaveGame() {
+      showConfirmation.value = false;
+    }
+
+    return { 
+      activeTab, 
+      move, 
+      setDirection, 
+      saveGame, 
+      resetGame,
+      showConfirmation,
+      confirmSaveGame,
+      cancelSaveGame
+    };
   },
 };
 </script>
@@ -63,6 +84,14 @@ export default {
         <button @click="saveGame">Save Game</button>
         <button @click="resetGame">Reset Game</button>
       </div>
+    </div>
+
+    <!-- Confirmation modal overlay -->
+    <div v-if="showConfirmation" class="modal-overlay">
+      <ConfirmationSave 
+        @confirm="confirmSaveGame" 
+        @cancel="cancelSaveGame" 
+      />
     </div>
   </div>
 </template>
@@ -110,6 +139,18 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
     align-items: center;
   }
 }
