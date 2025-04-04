@@ -250,10 +250,11 @@ export const create_cwActions = {
     const payload = {
       grid_size: gridSize,
       grid_cell_numbers,
-      grid_letters,     
+      grid_letters,
       def_Across_data: state.acrossWords,
       def_Down_data: state.downWords,
-      grid_timer: state.grid_timer 
+      grid_timer: state.grid_timer,
+      placedWords: state.placedWords  
     };
   
     api.post('/saveGame', payload, {
@@ -265,16 +266,22 @@ export const create_cwActions = {
       if (response.data.success) {
         alert(response.data.message);
       } else {
-        alert("Failed to save game");
+        alert("Failed to save game: " + response.data.error);
       }
     })
     .catch(error => {
-      console.error("Error saving game: ", error);
-      alert("Error saving game.");
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data &&
+        error.response.data.error
+      ) {
+        alert(error.response.data.error);
+      } else {
+        console.error("Error saving game: ", error);
+        alert("Error saving game.");
+      }
     });
-    
-
   }
-  
 
 };

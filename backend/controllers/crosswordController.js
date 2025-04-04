@@ -2,21 +2,49 @@
 const db = require('../config/db');
 const logger = require('../utils/logger');
 
+function hasConflictFromPlacedWords(placedWords, gridSize) {
+  const cells = Array.from({ length: gridSize * gridSize }, () => []);
+  
+  placedWords.forEach(word => {
+    for (let i = 0; i < word.word.length; i++) {
+      const row = word.position.row + (word.category === 'down' ? i : 0);
+      const col = word.position.col + (word.category === 'across' ? i : 0);
+      if (row < gridSize && col < gridSize) {
+        const cellIndex = row * gridSize + col;
+        cells[cellIndex].push(word.word[i]);
+      }
+    }
+  });
+  
+  return cells.some(cell =>
+    cell.length > 1 && !cell.every(letter => letter.toLowerCase() === cell[0].toLowerCase())
+  );
+}
+
 exports.saveGame = async (req, res, next) => {
-  let connection = null; // Declare connection with an initial null value
+  let connection = null;
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'Unauthorized: No user data.' });
+    }
     const acc_ID = req.user.acc_ID;
-    const { player_name, grid_size, grid_cell_numbers, grid_letters, def_Across_data, def_Down_data, grid_timer } = req.body;
-
+    const { grid_size, grid_cell_numbers, grid_letters, def_Across_data, def_Down_data, grid_timer, placedWords } = req.body;
+    
+    if (hasConflictFromPlacedWords(placedWords, grid_size)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Grid contains conflicts. Please resolve them before saving.'
+      });
+    }
+    
     connection = await db.getConnection();
-
-    // Begin a transaction if needed
+    
     const [[{ maxId } = {}]] = await connection.query(
       "SELECT MAX(CAST(SUBSTRING(game_ID, 6) AS UNSIGNED)) AS maxId FROM crossword_game FOR UPDATE"
     );
     const nextId = (maxId || 0) + 1;
     const game_ID = `game_${nextId}`;
-
+    
     await connection.query(
       `INSERT INTO crossword_game (
          game_ID,
@@ -39,12 +67,11 @@ exports.saveGame = async (req, res, next) => {
         grid_timer
       ]
     );
-
+    
     res.json({ success: true, message: 'Game saved successfully!' });
   } catch (error) {
     logger.error(error, "Error saving game");
     res.status(500).json({ success: false, error: 'Error saving game.' });
-    // Depending on your error-handling strategy, you may or may not call next(error) after sending a response.
     next(error);
   } finally {
     if (connection) connection.release();
