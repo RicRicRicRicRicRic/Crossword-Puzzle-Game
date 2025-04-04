@@ -1,18 +1,46 @@
 // components/PlayGame/ConfirmationSave.vue
 <script>
+import { computed } from 'vue';
 import { useStore } from 'vuex';
+
 export default {
   emits: ['confirm', 'cancel'],
   setup(props, { emit }) {
     const store = useStore();
-    
+
+    const gridConflict = computed(() => {
+      const gridSize = store.state.gridSize;
+      const cells = Array.from({ length: gridSize * gridSize }, () => []);
+
+      store.state.placedWords.forEach(word => {
+        for (let i = 0; i < word.word.length; i++) {
+          const row = word.position.row + (word.category === 'down' ? i : 0);
+          const col = word.position.col + (word.category === 'across' ? i : 0);
+          if (row < gridSize && col < gridSize) {
+            const cellIndex = row * gridSize + col;
+            cells[cellIndex].push(word.word[i]);
+          }
+        }
+      });
+      
+      return cells.some(cell =>
+        cell.length > 1 && !cell.every(letter => letter.toLowerCase() === cell[0].toLowerCase())
+      );
+    });
+
     function onConfirm() {
+      if (gridConflict.value) {
+        alert("There is a grid cell conflict. Please resolve it before saving the game.");
+        return; 
+      }
       store.dispatch('saveGame');
       emit('confirm');
     }
+
     function onCancel() {
       emit('cancel');
     }
+
     return { onConfirm, onCancel };
   },
 };
@@ -27,7 +55,6 @@ export default {
     </div>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .confirmation-popup {
