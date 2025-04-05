@@ -1,13 +1,13 @@
-//components/PlayGame/StartGame.vue
+//components/Gameplay/Gameplay_page.vue
 <script>
     export default {
-        
+        name: 'Gameplay_page',
     }
 </script>
 
 <template>
     <div>
-        <p>This is start game</p>
+        <span>this is gameplay</span>
     </div>
 </template>
 

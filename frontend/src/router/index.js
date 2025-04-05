@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../components/HomePage/Home.vue'
 import Authentication from '../components/Authentication/Auth_page.vue'
 import Dashboard from '@/components/Dashboard/Dashboard_Page.vue'
+import Gameplay from '@/components/Gameplay/Gameplay_page.vue'
 import store from '@/store/store' 
 
 const routes = [
@@ -20,6 +21,11 @@ const routes = [
     name: 'DashboardPage',
     component: Dashboard,
     meta: { requiresAuth: true } 
+  },
+  {
+    path: '/Gameplay',
+    name: 'Gameplay_page',
+    component: Gameplay
   },
 ]
 

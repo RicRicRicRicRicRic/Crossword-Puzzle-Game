@@ -104,3 +104,57 @@ exports.saveGame = async (req, res, next) => {
     if (connection) connection.release();
   }
 };
+
+exports.getAllGames = async (req, res, next) => {
+  try {
+    const [games] = await db.query(`
+      SELECT 
+        cg.game_ID,
+        cg.game_name,
+        cg.grid_size,
+        cg.grid_timer as time,
+        pa.player_name as created_by,
+        pa.profile_img,
+        cg.created_at
+      FROM 
+        crossword_game cg
+      JOIN 
+        player_account pa ON cg.acc_ID = pa.acc_ID
+      ORDER BY 
+        cg.created_at DESC
+    `);
+    
+    res.json(games);
+  } catch (error) {
+    logger.error(error, 'Error fetching games');
+    next(error);
+  }
+};
+
+exports.getGameById = async (req, res, next) => {
+  try {
+    const gameId = req.params.id;
+    
+    const [games] = await db.query(`
+      SELECT 
+        cg.*,
+        pa.player_name as created_by,
+        pa.profile_img
+      FROM 
+        crossword_game cg
+      JOIN 
+        player_account pa ON cg.acc_ID = pa.acc_ID
+      WHERE
+        cg.game_ID = ?
+    `, [gameId]);
+    
+    if (!games.length) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+    
+    res.json(games[0]);
+  } catch (error) {
+    logger.error(error, 'Error fetching game');
+    next(error);
+  }
+};
