@@ -213,7 +213,7 @@ export const create_cwActions = {
   resetCrossword({ commit }) {
     commit('resetCrossword');
   },
-  saveGame({ state }) {
+  saveGame({ state }, { gameName }) {
     const gridSize = state.gridSize;
     const grid_letters = Array.from({ length: gridSize }, () =>
       Array(gridSize).fill(null)
@@ -254,7 +254,8 @@ export const create_cwActions = {
       def_Across_data: state.acrossWords,
       def_Down_data: state.downWords,
       grid_timer: state.grid_timer,
-      placedWords: state.placedWords  
+      placedWords: state.placedWords,
+      game_name: gameName  // Add the game name to the payload
     };
   
     api.post('/saveGame', payload, {
@@ -282,6 +283,6 @@ export const create_cwActions = {
         alert("Error saving game.");
       }
     });
-  }
+}
 
 };

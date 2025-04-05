@@ -28,7 +28,32 @@ exports.saveGame = async (req, res, next) => {
       return res.status(401).json({ success: false, error: 'Unauthorized: No user data.' });
     }
     const acc_ID = req.user.acc_ID;
-    const { grid_size, grid_cell_numbers, grid_letters, def_Across_data, def_Down_data, grid_timer, placedWords } = req.body;
+    const { 
+      grid_size, 
+      grid_cell_numbers, 
+      grid_letters, 
+      def_Across_data, 
+      def_Down_data, 
+      grid_timer, 
+      placedWords,
+      game_name
+    } = req.body;
+    
+    if (!game_name || !game_name.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Game name is required.'
+      });
+    }
+    
+    const hasLetters = JSON.parse(JSON.stringify(grid_letters)).some(row => row.some(cell => cell !== null));
+    
+    if (!hasLetters) {
+      return res.status(400).json({
+        success: false,
+        error: 'Error: crossword game cannot be empty!'
+      });
+    }
     
     if (hasConflictFromPlacedWords(placedWords, grid_size)) {
       return res.status(400).json({
@@ -54,8 +79,9 @@ exports.saveGame = async (req, res, next) => {
          grid_letters,
          def_Across_data,
          def_Down_data,
-         grid_timer
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+         grid_timer,
+         game_name
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         game_ID,
         acc_ID,
@@ -64,7 +90,8 @@ exports.saveGame = async (req, res, next) => {
         JSON.stringify(grid_letters),
         JSON.stringify(def_Across_data),
         JSON.stringify(def_Down_data),
-        grid_timer
+        grid_timer,
+        game_name.trim()
       ]
     );
     
