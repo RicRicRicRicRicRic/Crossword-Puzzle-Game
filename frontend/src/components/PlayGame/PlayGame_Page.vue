@@ -7,14 +7,24 @@ import AboutGame from './AboutGame.vue';
 
 export default {
   components: { AboutGame },
+  props: {
+    user: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
+      showAboutGame: false,
+      selectedGame: null,
       games: [],
       loading: true,
       error: null,
       searchTerm: "",
+      creatorSearchTerm: "",
       selectedGridSize: "",
-      selectedDate: ""
+      selectedDate: "",
+      pollingInterval: null
     }
   },
   computed: {
@@ -39,37 +49,59 @@ export default {
     filteredGames() {
       return this.games.filter(game => {
         const matchesName = game.game_name.toLowerCase().includes(this.searchTerm.toLowerCase());
+        const matchesCreator = this.creatorSearchTerm ? 
+          game.created_by.toLowerCase().includes(this.creatorSearchTerm.toLowerCase()) : true;
         const matchesGridSize = this.selectedGridSize ? game.grid_size == this.selectedGridSize : true;
         let matchesDate = true;
         if (this.selectedDate && game.created_at) {
           const gameDate = new Date(game.created_at).toISOString().split('T')[0];
           matchesDate = gameDate === this.selectedDate;
         }
-        return matchesName && matchesGridSize && matchesDate;
+        return matchesName && matchesCreator && matchesGridSize && matchesDate;
       });
     }
   },
   mounted() {
     this.fetchGames();
+    this.pollingInterval = setInterval(this.fetchGames, 10000);
+  },
+  beforeUnmount() {
+    clearInterval(this.pollingInterval);
   },
   methods: {
+    openAboutGame(game) {
+      this.getGameDetails(game.game_ID);
+    },
+    closeAboutGame() {
+      this.showAboutGame = false;
+      this.selectedGame = null;
+    },
+    async getGameDetails(gameId) {
+      try {
+        const response = await api.get(`/games/${gameId}`);
+        this.selectedGame = response.data;
+        this.showAboutGame = true;
+      } catch (err) {
+        console.error("Failed to load game details:", err);
+      }
+    },
     async fetchGames() {
       try {
-        this.loading = true;
+        const wasLoading = this.loading;
+        if (wasLoading) this.loading = true;
+        
         const response = await api.get('/games');
         const hasChanges = JSON.stringify(response.data) !== JSON.stringify(this.games);
         if (hasChanges) {
           this.games = response.data;
         }
-        this.loading = false;
+        
+        if (wasLoading) this.loading = false;
       } catch (err) {
         this.error = "Failed to load games";
         console.error(err);
         this.loading = false;
       }
-    },
-    playGame(gameId) {
-      this.$router.push(`/game/${gameId}`);
     },
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -77,6 +109,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <template>
@@ -84,13 +117,17 @@ export default {
     <div class="playgame-panel">
       <div class="filter-bar">
         <input type="text" v-model="searchTerm" placeholder="Search game name..." />
+        <input type="text" v-model="creatorSearchTerm" placeholder="Search by creator..." />
         <select v-model="selectedGridSize">
           <option value="">All Grid Sizes</option>
           <option v-for="size in gridSizes" :key="size" :value="size">{{ size }}x{{ size }}</option>
         </select>
         <input type="date" v-model="selectedDate" />
       </div>
-      <ul class="game-list">
+      
+      <div v-if="loading" class="loading">Loading games...</div>
+      <div v-else-if="error" class="error">{{ error }}</div>
+      <ul v-else class="game-list">
         <li v-for="game in filteredGames" :key="game.game_ID" class="game-selection">
           <div class="left-section">
             <div class="pfp-container">
@@ -106,18 +143,28 @@ export default {
                 <p>GameID: {{ game.game_ID }}</p>
                 <p>Grid size: {{ game.grid_size }}x{{ game.grid_size }}</p>
               </div>
-              <div class="center-right">
-                <p>Time: {{ game.time }} min</p>
+              <div class="center-center">
                 <p>Created by: {{ game.created_by }}</p>
                 <p v-if="game.created_at">Date: {{ formatDate(game.created_at) }}</p>
+              </div>
+              <div class="center-right">
+                <p>Time: {{ game.time }} min</p>
               </div>
             </div>
           </div>
           <div class="right-section">
-            <button @click="playGame(game.game_ID)">Play</button>
+            <button @click="openAboutGame(game)">Play</button>
           </div>
         </li>
       </ul>
+      
+      <!-- About Game Modal -->
+      <AboutGame
+        v-if="showAboutGame && selectedGame" 
+        :game="selectedGame"
+        :user="user"
+        @close="closeAboutGame"
+      />
     </div>
   </div>
 </template>
@@ -130,6 +177,20 @@ export default {
   margin-top: 16px;
   height: 91vh;
   border-bottom: 5px solid;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.playgame-panel {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 16px;
+  height: 91vh;
+  border-bottom: 5px solid;
+  overflow: hidden;
 }
 
 .playgame-panel {
@@ -143,19 +204,20 @@ export default {
 
 .filter-bar {
   display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 8px;
-  border-bottom: 2px solid #ccc;
+  gap: 10px;
+  padding: 15px;
   background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
   
-  input[type="text"],
-  input[type="date"],
-  select {
-    padding: 5px;
-    font-size: 1em;
-    border: 1px solid #ccc;
+  input, select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  input[type="text"] {
+    flex: 1;
   }
 }
 
@@ -163,95 +225,97 @@ export default {
   list-style: none;
   padding: 0;
   margin: 0;
-  width: 100%;
+  overflow-y: auto; 
+  flex: 1; 
+}
+
+.game-selection {
+  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+  align-items: center;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.left-section {
+  width: 120px;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+
+}
+
+.pfp-container {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+  
+  
+  .user-pfp {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+  }
+}
+
+.center-section {
   flex: 1;
-  overflow-y: auto;
 
-  .game-selection {
+  .game-name h2 {
+    margin: 0 0 5px 0;
+    padding-left: 50px;
+    font-size: 20px;
+  }
+  
+  .info-sections {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding:10px;
-    border-bottom: 1px solid #ccc;
-    height: 75px; 
-
-    .left-section {
-      flex: 0 0 auto;
-      width: 10%;
-      display: flex; 
-      align-items: center;
-      justify-content: center;
-
-      .pfp-container {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .user-pfp {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          margin: 0; 
-        }
-      }
-    }
-
-    .center-section {
+    font-size: 14px;
+    
+    .center-left, .center-right, .center-center {
+      padding-left: 50px;
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 80%;
-      padding-bottom: 10px;
-
-      .game-name {
-        flex: 0 0 40%; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        border: 1px solid #ccc;
-
-        h2 {
-          font-size: 20px;
-          margin: 0;
-        }
+      
+      p {
+        margin: 5px 0;
+        color: #666;
       }
-
-      .info-sections {
-        flex: 0 0 60%; 
-        display: flex;
-        justify-content: space-between;
-
-        .center-left,
-        .center-right {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          width: 50%;
-          height: 100%;
-          border: 1px solid #ccc;
-          padding: 0 10px;
-
-          p {
-            margin: 0;
-            font-size: 0.9em;
-          }
-        }
-      }
-    }
-
-    .right-section {
-      flex: 0 0 auto;
-      width: 10%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
+}
+
+.right-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  
+  button {
+    padding: 8px 20px;
+    background-color: #47b94a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    
+    &:hover {
+      background-color: #3f8142;
+    }
+  }
+}
+
+.loading, .error {
+  padding: 20px;
+  text-align: center;
+}
+
+.error {
+  color: #d32f2f;
 }
 </style>
