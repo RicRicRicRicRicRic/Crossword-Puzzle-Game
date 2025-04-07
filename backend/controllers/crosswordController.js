@@ -158,3 +158,72 @@ exports.getGameById = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.startGame = async (req, res, next) => {
+  try {
+    const gameId = req.params.id;
+    const [results] = await db.query(`
+      SELECT 
+        grid_size,
+        grid_letters,
+        grid_cell_numbers,
+        def_Across_data,
+        def_Down_data,
+        grid_timer
+      FROM 
+        crossword_game
+      WHERE
+        game_ID = ?
+    `, [gameId]);
+
+    if (!results.length) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    const { grid_size, grid_letters, grid_cell_numbers, def_Across_data, def_Down_data, grid_timer } = results[0];
+
+    console.log("Raw data from DB: ", {
+      grid_size,
+      grid_letters,
+      grid_cell_numbers,
+      def_Across_data,
+      def_Down_data,
+      grid_timer
+    });
+
+    const parsedData = {
+      gridLetters: grid_letters,
+      gridCellNumbers: grid_cell_numbers,
+      defAcrossData: def_Across_data,
+      defDownData: def_Down_data
+    };
+
+    console.log("Parsed data before processing: ", parsedData);
+
+    function safeJsonParse(data) {
+      return typeof data === 'string' ? JSON.parse(data) : data;
+    }
+    
+    parsedData.gridLetters = safeJsonParse(grid_letters);
+    parsedData.gridCellNumbers = safeJsonParse(grid_cell_numbers);
+    parsedData.defAcrossData = safeJsonParse(def_Across_data);
+    parsedData.defDownData = safeJsonParse(def_Down_data);    
+    
+    res.json({
+      success: true,
+      game: {
+        gridSize: grid_size,
+        gridLetters: parsedData.gridLetters,
+        gridCellNumbers: parsedData.gridCellNumbers,
+        definitionsAcross: parsedData.defAcrossData,
+        definitionsDown: parsedData.defDownData,
+        gridTimer: grid_timer
+      }
+    });
+
+  } catch (error) {
+    console.error("Error starting game:", error);
+    res.status(500).json({ success: false, error: 'Error starting game.' });
+    next(error);
+  }
+};

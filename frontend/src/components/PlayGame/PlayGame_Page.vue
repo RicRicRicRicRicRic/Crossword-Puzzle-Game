@@ -149,6 +149,7 @@ export default {
               </div>
               <div class="center-right">
                 <p>Time: {{ game.time }} min</p>
+                <p>Status: </p>
               </div>
             </div>
           </div>

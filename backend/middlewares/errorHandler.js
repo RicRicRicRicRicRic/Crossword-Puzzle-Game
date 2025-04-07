@@ -1,6 +1,12 @@
 //middlewares/errorHandler.js
+// errorHandler.js
 module.exports = (err, req, res, next) => {
-    req.log.error(err, 'Unhandled error occurred'); r
-    res.status(500).json({ error: 'An unexpected error occurred' });
-  };
-  
+  const r = req.body; 
+
+  if (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } else {
+    next();
+  }
+};

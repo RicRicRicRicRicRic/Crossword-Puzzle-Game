@@ -23,7 +23,7 @@ const routes = [
     meta: { requiresAuth: true } 
   },
   {
-    path: '/Gameplay',
+    path: '/game/:gameId',
     name: 'Gameplay_page',
     component: Gameplay
   },
