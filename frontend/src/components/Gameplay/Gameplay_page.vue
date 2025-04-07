@@ -27,7 +27,7 @@ export default {
     <div class="gameplay-container">
         <div class="gameplay-panel">
             <div class="left-column">
-
+                <PlayGrid/>
             </div>
             <div class="right-column">
                 <div class="top-right">
