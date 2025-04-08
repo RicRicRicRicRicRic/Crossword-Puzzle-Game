@@ -85,13 +85,11 @@ export default {
             <Definitions/>
           </div>
           <div class="bottom-right">
-            <!-- Listen for the quit-game event from Hotbar -->
             <Hotbar @quit-game="onQuitGame" />
           </div>
         </div>
       </div>
     </div>
-    <!-- Render FinishGame if the game naturally finishes or if the user confirms quitting -->
     <FinishGame 
       v-if="gameFinished || showFinishGame" 
       :score="score" 
