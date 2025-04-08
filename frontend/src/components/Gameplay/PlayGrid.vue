@@ -67,7 +67,6 @@ export default {
     function handleKeydown(event, row, col) {
       const key = event.key;
       let dr = 0, dc = 0;
-
       if (key === 'ArrowUp') {
         dr = -1;
       } else if (key === 'ArrowDown') {
@@ -79,13 +78,11 @@ export default {
       } else {
         return;
       }
-
       event.preventDefault();
 
       function findNextWhiteCell(currentRow, currentCol, dr, dc) {
         let newRow = currentRow + dr;
         let newCol = currentCol + dc;
-
         while (
           newRow >= 0 &&
           newRow < store.getters.gridSize &&
@@ -111,15 +108,13 @@ export default {
     }
 
     const gridSize = computed(() => store.getters.gridSize);
-
     const gridStyle = computed(() => ({
       display: 'grid',
       gridTemplateColumns: `repeat(${gridSize.value}, 1fr)`,
       gridTemplateRows: `repeat(${gridSize.value}, 1fr)`,
       width: '100%',
-      height: '100%',
+      height: '100%'
     }));
-
     const cellFontSize = computed(() => {
       const size = gridSize.value;
       if (!size) return '16px';
@@ -129,7 +124,6 @@ export default {
       const fontSize = minFontSize + (maxFontSize - minFontSize) * (1 - fraction);
       return fontSize + 'px';
     });
-
     function cellClasses(row, col) {
       const classes = [];
       if (!store.getters.solutionLetter(row, col)) {
@@ -144,7 +138,10 @@ export default {
     }
 
     onMounted(async () => {
-      await store.dispatch('fetchGameData', gameId);
+      // Only fetch new game data if no gameData exists.
+      if (!store.state.gameData) {
+        await store.dispatch('fetchGameData', gameId);
+      }
       initializeInputRefs();
     });
 
@@ -158,9 +155,9 @@ export default {
       handleInput,
       handleKeydown,
       cellClasses,
-      setInputRef,
+      setInputRef
     };
-  },
+  }
 };
 </script>
 
@@ -194,6 +191,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 .playgrid-container {

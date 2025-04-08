@@ -16,14 +16,20 @@ export default {
       const percentage = store.getters.progressPercentage;
       return {
         width: percentage + '%',
-        backgroundColor: store.getters.progressColor,
+        backgroundColor: store.getters.progressColor
       };
     });
 
     const formattedTime = computed(() => store.getters.formattedTime);
 
     onMounted(async () => {
-      await store.dispatch('fetchGameData', gameId);
+      if (!store.state.gameData) {
+        await store.dispatch('fetchGameData', gameId);
+      }
+      
+      if (store.state.currentTimeLeft > 0) {
+        store.dispatch('startTimer'); 
+      }
       emit('updateTime', store.state.currentTimeLeft);
     });
 
@@ -33,11 +39,12 @@ export default {
 
     return {
       progressBarStyle,
-      formattedTime,
+      formattedTime
     };
-  },
+  }
 };
 </script>
+
 
 <template>
   <div class="header-timer">
@@ -46,6 +53,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 .header-timer {

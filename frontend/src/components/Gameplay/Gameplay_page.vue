@@ -1,21 +1,30 @@
 //components/Gameplay/Gameplay_page.vue
 
 <script>
-import { computed } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import HeaderTimer from './HeaderTimer.vue';
 import PlayGrid from './PlayGrid.vue';
 import Definitions from './Definitions.vue';
 import Hotbar from './Hotbar.vue';
+import FinishGame from './FinishGame.vue';
 
 export default {
   name: 'Gameplay_page',
   components: {
-    HeaderTimer, Definitions, PlayGrid, Hotbar
+    HeaderTimer,
+    Definitions,
+    PlayGrid,
+    Hotbar,
+    FinishGame
   },
   setup() {
     const store = useStore();
-    
+    const router = useRouter();
+    const showQuitModal = ref(false);
+    const showFinishGame = ref(false);
+
     function onUpdateTime(newTimeLeft) {
       store.commit('UPDATE_TIME_LEFT', newTimeLeft);
     }
@@ -28,13 +37,66 @@ export default {
       store.commit('DECREMENT_SCORE', store.state.currentTimeLeft);
     }
     
+    const gameCompleted = computed(() => {
+      const gridSize = store.getters.gridSize;
+      if (!gridSize) return false;
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          if (store.getters.solutionLetter(row, col)) {
+            if (store.state.gridAnswers[row][col].status !== 'correct') {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    });
+    
+    const gameFinished = computed(() => {
+      return gameCompleted.value || store.state.currentTimeLeft === 0;
+    });
+    
+    const onQuitGame = () => {
+      showQuitModal.value = true;
+    };
+
+    const handlePopState = () => {
+      showQuitModal.value = true;
+    };
+
+    const confirmQuit = () => {
+
+      store.dispatch('RESET_PLAY_GAME');
+      showQuitModal.value = false;
+      showFinishGame.value = true;
+    };
+
+    const cancelQuit = () => {
+      showQuitModal.value = false;
+    };
+
+    onMounted(() => {
+      window.addEventListener('popstate', handlePopState);
+      
+    });
+    
+    onBeforeUnmount(() => {
+      window.removeEventListener('popstate', handlePopState);
+    });
+    
     return {
       score: computed(() => store.state.score),
       currentTimeLeft: computed(() => store.state.currentTimeLeft),
       gameId: computed(() => store.state.gameData?.id),
       onUpdateTime,
       onCorrectLetter,
-      onIncorrectLetter
+      onIncorrectLetter,
+      gameFinished,
+      onQuitGame,
+      showQuitModal,
+      confirmQuit,
+      cancelQuit,
+      showFinishGame
     };
   }
 };
@@ -43,13 +105,11 @@ export default {
 <template>
   <div class="HeaderTimer-container">
     <div class="header-bar">
-      <!-- HeaderTimer emits current time each update -->
       <HeaderTimer @updateTime="onUpdateTime" />
     </div>
     <div class="gameplay-container">
       <div class="gameplay-panel">
         <div class="left-column">
-          <!-- Listen for both correct-letter and incorrect-letter events -->
           <PlayGrid @correct-letter="onCorrectLetter" @incorrect-letter="onIncorrectLetter" />
         </div>
         <div class="right-column">
@@ -57,9 +117,27 @@ export default {
             <Definitions/>
           </div>
           <div class="bottom-right">
-            <!-- Pass the score to Hotbar -->
-            <Hotbar :score="score" />
+            <Hotbar @quit-game="onQuitGame" />
           </div>
+        </div>
+      </div>
+    </div>
+    <FinishGame 
+      v-if="gameFinished && !showQuitModal && !showFinishGame" 
+      :score="score" 
+      :currentTimeLeft="currentTimeLeft" 
+    />
+    <FinishGame 
+      v-if="showFinishGame" 
+      :score="score" 
+      :currentTimeLeft="currentTimeLeft" 
+    />
+    <div v-if="showQuitModal" class="quit-confirmation-modal">
+      <div class="confirmation-content">
+        <h3>Do you really want to quit the game?</h3>
+        <div class="modal-buttons">
+          <button class="yes-btn" @click="confirmQuit">Yes</button>
+          <button class="no-btn" @click="cancelQuit">No</button>
         </div>
       </div>
     </div>
@@ -111,5 +189,61 @@ export default {
             height: 45%;
         }
     }
+}
+.quit-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1500;
+  
+  .confirmation-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    
+    h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+      color: #333;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      justify-content: space-around;
+      
+      button {
+        padding: 0.5rem 1.2rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      
+      .yes-btn {
+        background-color: #47b94a;
+        color: #fff;
+        &:hover {
+          background-color: #3aa03a;
+        }
+      }
+      
+      .no-btn {
+        background-color: #c0392b;
+        color: #fff;
+        &:hover {
+          background-color: #a93226;
+        }
+      }
+    }
+  }
 }
 </style>

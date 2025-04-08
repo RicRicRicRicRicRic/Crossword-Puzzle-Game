@@ -12,6 +12,7 @@ export default {
   },
   created() {
     this.$store.dispatch('resetCrossword');
+    this.$store.dispatch('resetPlayGame');
   },
   methods: {
     async login() {

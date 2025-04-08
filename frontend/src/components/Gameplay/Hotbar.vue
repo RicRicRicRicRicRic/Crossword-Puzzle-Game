@@ -5,7 +5,8 @@ import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 
 export default {
-  setup() {
+  name: 'Hotbar',
+  setup(props, { emit }) {
     const store = useStore();
     const activeTab = ref('Score');
     const volume = ref(50);
@@ -23,11 +24,16 @@ export default {
       return "";
     });
     
+    const quitGame = () => {
+      emit('quit-game');
+    };
+    
     return {
       score: computed(() => store.state.score),
       activeTab,
       volume,
-      volumeIcon
+      volumeIcon,
+      quitGame
     };
   }
 };
@@ -48,8 +54,9 @@ export default {
       </button>
     </div>
     <div class="hotbar-content">
-      <div v-if="activeTab === 'Score'">
-        <span>Current Score: {{ score.toFixed(1) }}</span>
+      <div class="score-display" v-if="activeTab === 'Score'">
+        <h2>Current Score:</h2>
+        <p>{{ score.toFixed(1) }}</p>
       </div>
       <div v-if="activeTab === 'Settings'">
         <div class="settings-controls">
@@ -64,13 +71,12 @@ export default {
             />
             <span class="volume-number">{{ volume }}</span>
           </div>
-          <button class="quit-button">Quit Game</button>
+          <button class="quit-button" @click="quitGame">Quit Game</button>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 .hotbar-container {
@@ -117,13 +123,25 @@ export default {
   }
 
   .hotbar-content {
-    margin-top: 40px;
+    margin-top: 20px;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    .score-display {
+        display: flex;         
+        flex-direction: column;    
+        align-items: center;       
+        justify-content: center;   
+
+        p {
+            margin: 0;              
+            font-size: 20px;
+    }
   }
+}
 
   .settings-controls {
     display: flex;
