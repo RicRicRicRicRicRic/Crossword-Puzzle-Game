@@ -1,44 +1,20 @@
 //components/Gameplay/PlayGrid.vue
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import api from '@/services/api';
+import { useStore } from 'vuex';
 
 export default {
   name: 'PlayGrid',
   setup(props, { emit }) {
     const route = useRoute();
+    const store = useStore();
     const gameId = route.params.gameId;
-    const gameData = ref(null);
-    const gridAnswers = ref([]);
     const inputRefs = ref([]);
 
-    async function fetchGameData() {
-      try {
-        const response = await api.get(`/startGame/${gameId}`);
-        if (response.data.success) {
-          gameData.value = response.data.game;
-          initializeGridAnswers();
-          initializeInputRefs();
-        }
-      } catch (error) {
-        console.error('Error fetching game data:', error);
-      }
-    }
-
-    function initializeGridAnswers() {
-      const size = gameData.value.gridSize;
-      gridAnswers.value = Array.from({ length: size }, () =>
-        Array.from({ length: size }, () => ({
-          answer: '',
-          status: 'neutral',
-        }))
-      );
-    }
-
     function initializeInputRefs() {
-      const size = gameData.value.gridSize;
+      const size = store.getters.gridSize;
       inputRefs.value = Array.from({ length: size }, () =>
         Array.from({ length: size }, () => null)
       );
@@ -53,35 +29,23 @@ export default {
       }
     }
 
-    function solutionLetter(row, col) {
-      return gameData.value ? gameData.value.gridLetters[row][col] : null;
-    }
-
-    function cellNumber(row, col) {
-      return gameData.value ? gameData.value.gridCellNumbers[row][col] : null;
-    }
-
-    function handleInput(row, col) {
-      const userLetter = gridAnswers.value[row][col].answer.trim();
-      const expected = solutionLetter(row, col);
-      if (!userLetter) {
-        gridAnswers.value[row][col].status = 'neutral';
-      } else if (userLetter.toLowerCase() === expected.toLowerCase()) {
-        gridAnswers.value[row][col].status = 'correct';
-        // Emit event for correct letter
+    async function handleInput(row, col) {
+      const value = store.state.gridAnswers[row][col].answer;
+      // Await the action to ensure the result is returned correctly.
+      const result = await store.dispatch('handleInput', { row, col, value });
+      
+      if (result === 'correct') {
         emit('correct-letter');
         autoFocusNext(row, col);
-      } else {
-        gridAnswers.value[row][col].status = 'incorrect';
-        // Emit event for an incorrect letter
+      } else if (result === 'incorrect') {
         emit('incorrect-letter');
       }
     }
 
     function autoFocusNext(row, col) {
-      const size = gameData.value.gridSize;
-      if (col + 1 < size && solutionLetter(row, col + 1)) {
-        if (gridAnswers.value[row][col + 1].status !== 'correct') {
+      const size = store.getters.gridSize;
+      if (col + 1 < size && store.getters.solutionLetter(row, col + 1)) {
+        if (store.state.gridAnswers[row][col + 1].status !== 'correct') {
           const targetInput = inputRefs.value[row][col + 1];
           if (targetInput) {
             targetInput.focus();
@@ -89,8 +53,8 @@ export default {
           }
         }
       }
-      if (row + 1 < size && solutionLetter(row + 1, col)) {
-        if (gridAnswers.value[row + 1][col].status !== 'correct') {
+      if (row + 1 < size && store.getters.solutionLetter(row + 1, col)) {
+        if (store.state.gridAnswers[row + 1][col].status !== 'correct') {
           const targetInput = inputRefs.value[row + 1][col];
           if (targetInput) {
             targetInput.focus();
@@ -101,58 +65,52 @@ export default {
     }
 
     function handleKeydown(event, row, col) {
-  const key = event.key;
-  let dr = 0, dc = 0;
+      const key = event.key;
+      let dr = 0, dc = 0;
 
-  if (key === 'ArrowUp') {
-    dr = -1;
-  } else if (key === 'ArrowDown') {
-    dr = 1;
-  } else if (key === 'ArrowLeft') {
-    dc = -1;
-  } else if (key === 'ArrowRight') {
-    dc = 1;
-  } else {
-    return;
-  }
-
-  event.preventDefault();
-
-  // Function that searches for the next selectable (white) cell in the given direction.
-  function findNextWhiteCell(currentRow, currentCol, dr, dc) {
-    let newRow = currentRow + dr;
-    let newCol = currentCol + dc;
-
-    // Loop until reaching grid boundaries.
-    while (
-      newRow >= 0 &&
-      newRow < gridSize.value &&
-      newCol >= 0 &&
-      newCol < gridSize.value
-    ) {
-      // If the cell has a solution letter, we can select it.
-      if (solutionLetter(newRow, newCol)) {
-        return { row: newRow, col: newCol };
+      if (key === 'ArrowUp') {
+        dr = -1;
+      } else if (key === 'ArrowDown') {
+        dr = 1;
+      } else if (key === 'ArrowLeft') {
+        dc = -1;
+      } else if (key === 'ArrowRight') {
+        dc = 1;
+      } else {
+        return;
       }
-      // Otherwise, continue in the same direction.
-      newRow += dr;
-      newCol += dc;
+
+      event.preventDefault();
+
+      function findNextWhiteCell(currentRow, currentCol, dr, dc) {
+        let newRow = currentRow + dr;
+        let newCol = currentCol + dc;
+
+        while (
+          newRow >= 0 &&
+          newRow < store.getters.gridSize &&
+          newCol >= 0 &&
+          newCol < store.getters.gridSize
+        ) {
+          if (store.getters.solutionLetter(newRow, newCol)) {
+            return { row: newRow, col: newCol };
+          }
+          newRow += dr;
+          newCol += dc;
+        }
+        return null;
+      }
+
+      const nextCell = findNextWhiteCell(row, col, dr, dc);
+      if (nextCell) {
+        const targetInput = inputRefs.value[nextCell.row][nextCell.col];
+        if (targetInput) {
+          targetInput.focus();
+        }
+      }
     }
-    // If no selectable cell is found, return null.
-    return null;
-  }
 
-  const nextCell = findNextWhiteCell(row, col, dr, dc);
-  if (nextCell) {
-    const targetInput = inputRefs.value[nextCell.row][nextCell.col];
-    if (targetInput) {
-      targetInput.focus();
-    }
-  }
-}
-
-
-    const gridSize = computed(() => (gameData.value ? gameData.value.gridSize : 0));
+    const gridSize = computed(() => store.getters.gridSize);
 
     const gridStyle = computed(() => ({
       display: 'grid',
@@ -174,26 +132,29 @@ export default {
 
     function cellClasses(row, col) {
       const classes = [];
-      if (!solutionLetter(row, col)) {
+      if (!store.getters.solutionLetter(row, col)) {
         classes.push('black-cell');
       } else {
         classes.push('white-cell');
-        const status = gridAnswers.value[row][col].status;
+        const status = store.state.gridAnswers[row][col].status;
         if (status === 'correct') classes.push('correct');
         if (status === 'incorrect') classes.push('incorrect');
       }
       return classes;
     }
 
-    onMounted(fetchGameData);
+    onMounted(async () => {
+      await store.dispatch('fetchGameData', gameId);
+      initializeInputRefs();
+    });
 
     return {
       gridStyle,
       gridSize,
       cellFontSize,
-      gridAnswers,
-      solutionLetter,
-      cellNumber,
+      gridAnswers: computed(() => store.state.gridAnswers),
+      solutionLetter: (row, col) => store.getters.solutionLetter(row, col),
+      cellNumber: (row, col) => store.getters.cellNumber(row, col),
       handleInput,
       handleKeydown,
       cellClasses,

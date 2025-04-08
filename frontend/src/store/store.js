@@ -2,7 +2,7 @@
 import { createStore } from 'vuex';
 import { authState, authMutations } from './modules/auth';
 import { create_cwState, create_cwMutations, create_cwActions } from './modules/create_crossword';
-import { play_cwState, play_cwMutations, play_cwActions } from './modules/play_crossword';
+import { play_cwState, play_cwMutations, play_cwActions, play_cwGetters } from './modules/play_crossword';
 
 export default createStore({
   state: {
@@ -19,5 +19,7 @@ export default createStore({
     ...create_cwActions,
     ...play_cwActions,
   },
-  getters: {},
+  getters: {
+    ...play_cwGetters,
+  },
 });

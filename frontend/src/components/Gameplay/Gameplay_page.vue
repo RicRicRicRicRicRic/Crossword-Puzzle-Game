@@ -1,6 +1,8 @@
 //components/Gameplay/Gameplay_page.vue
 
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import HeaderTimer from './HeaderTimer.vue';
 import PlayGrid from './PlayGrid.vue';
 import Definitions from './Definitions.vue';
@@ -11,28 +13,29 @@ export default {
   components: {
     HeaderTimer, Definitions, PlayGrid, Hotbar
   },
-  data() {
+  setup() {
+    const store = useStore();
+    
+    function onUpdateTime(newTimeLeft) {
+      store.commit('UPDATE_TIME_LEFT', newTimeLeft);
+    }
+    
+    function onCorrectLetter() {
+      store.commit('INCREMENT_SCORE', store.state.currentTimeLeft);
+    }
+    
+    function onIncorrectLetter() {
+      store.commit('DECREMENT_SCORE', store.state.currentTimeLeft);
+    }
+    
     return {
-      score: 0,
-      currentTimeLeft: 0
+      score: computed(() => store.state.score),
+      currentTimeLeft: computed(() => store.state.currentTimeLeft),
+      gameId: computed(() => store.state.gameData?.id),
+      onUpdateTime,
+      onCorrectLetter,
+      onIncorrectLetter
     };
-  },
-  computed: {
-    gameId() {
-      return this.$route.params.gameId;
-    }
-  },
-  methods: {
-    onUpdateTime(newTimeLeft) {
-
-      this.currentTimeLeft = newTimeLeft;
-    },
-    onCorrectLetter() {
-      this.score += 1.1 * this.currentTimeLeft;
-    },
-    onIncorrectLetter() {
-      this.score -= 0.55 * this.currentTimeLeft;
-    }
   }
 };
 </script>

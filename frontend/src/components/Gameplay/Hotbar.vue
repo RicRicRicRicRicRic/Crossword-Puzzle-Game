@@ -1,34 +1,36 @@
 //components/Gameplay/Hotbar.vue
 
 <script>
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
+
 export default {
-  props: {
-    score: {
-      type: Number,
-      default: 0
-    }
-  },
-  data() {
-    return {
-      activeTab: 'Score',
-      volume: 50
-    }
-  },
-  computed: {
-    volumeIcon() {
-      if (this.volume === 0) {
+  setup() {
+    const store = useStore();
+    const activeTab = ref('Score');
+    const volume = ref(50);
+    
+    const volumeIcon = computed(() => {
+      if (volume.value === 0) {
         return "🔇";
-      } else if (this.volume >= 70) {
+      } else if (volume.value >= 70) {
         return "🔊";
-      } else if (this.volume >= 40) {
+      } else if (volume.value >= 40) {
         return "🔉";
-      } else if (this.volume >= 1) {
+      } else if (volume.value >= 1) {
         return "🔈";
       }
       return "";
-    }
+    });
+    
+    return {
+      score: computed(() => store.state.score),
+      activeTab,
+      volume,
+      volumeIcon
+    };
   }
-}
+};
 </script>
 
 <template>
@@ -142,12 +144,17 @@ export default {
     .volume-icon {
       font-size: 1.5rem;
       width: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       text-align: center;
+      margin-left: 5px;
     }
 
     .volume-slider {
       flex: 1;
       -webkit-appearance: none;
+      appearance: none;
       width: 100%;
       height: 3px;
       border-radius: 3px;
