@@ -175,20 +175,17 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 16px;
-  height: 91vh;
+  height: calc(100vh - 35px);
   border-bottom: 5px solid;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .playgame-panel {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 16px;
   height: 91vh;
   border-bottom: 5px solid;
   overflow: hidden;

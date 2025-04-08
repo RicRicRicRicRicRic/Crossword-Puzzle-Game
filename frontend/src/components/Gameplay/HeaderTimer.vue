@@ -1,13 +1,13 @@
 //components/Gameplay/HeaderTimer.vue
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '@/services/api';
 
 export default {
   name: 'HeaderTimer',
-  setup() {
+  setup(props, { emit }) {
     const route = useRoute();
     const gameId = route.params.gameId;
     const timerMinutes = ref(0);
@@ -38,6 +38,10 @@ export default {
         }
       }, 1000);
     }
+
+    watch(timeLeft, (newVal) => {
+      emit('updateTime', newVal);
+    });
 
     const progressBarStyle = computed(() => {
       const percentage =

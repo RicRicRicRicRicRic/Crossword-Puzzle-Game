@@ -1,4 +1,5 @@
 //components/Gameplay/Gameplay_page.vue
+
 <script>
 import HeaderTimer from './HeaderTimer.vue';
 import PlayGrid from './PlayGrid.vue';
@@ -10,39 +11,57 @@ export default {
   components: {
     HeaderTimer, Definitions, PlayGrid, Hotbar
   },
+  data() {
+    return {
+      score: 0,
+      currentTimeLeft: 0
+    };
+  },
   computed: {
     gameId() {
       return this.$route.params.gameId;
-    },
+    }
   },
+  methods: {
+    onUpdateTime(newTimeLeft) {
+
+      this.currentTimeLeft = newTimeLeft;
+    },
+    onCorrectLetter() {
+      this.score += 1.1 * this.currentTimeLeft;
+    },
+    onIncorrectLetter() {
+      this.score -= 0.55 * this.currentTimeLeft;
+    }
+  }
 };
 </script>
 
-
 <template>
-<div class="HeaderTimer-container">
+  <div class="HeaderTimer-container">
     <div class="header-bar">
-        <HeaderTimer />
+      <!-- HeaderTimer emits current time each update -->
+      <HeaderTimer @updateTime="onUpdateTime" />
     </div>
     <div class="gameplay-container">
-        <div class="gameplay-panel">
-            <div class="left-column">
-                <PlayGrid/>
-            </div>
-            <div class="right-column">
-                <div class="top-right">
-                    <Definitions/>
-                </div>
-                <div class="bottom-right">
-
-                </div>
-            </div>
+      <div class="gameplay-panel">
+        <div class="left-column">
+          <!-- Listen for both correct-letter and incorrect-letter events -->
+          <PlayGrid @correct-letter="onCorrectLetter" @incorrect-letter="onIncorrectLetter" />
         </div>
+        <div class="right-column">
+          <div class="top-right">
+            <Definitions/>
+          </div>
+          <div class="bottom-right">
+            <!-- Pass the score to Hotbar -->
+            <Hotbar :score="score" />
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-
+  </div>
 </template>
-
 
 <style lang="scss" scoped>
 

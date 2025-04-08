@@ -1,4 +1,5 @@
 //components/Gameplay/PlayGrid.vue
+
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
@@ -6,7 +7,7 @@ import api from '@/services/api';
 
 export default {
   name: 'PlayGrid',
-  setup() {
+  setup(props, { emit }) {
     const route = useRoute();
     const gameId = route.params.gameId;
     const gameData = ref(null);
@@ -67,15 +68,18 @@ export default {
         gridAnswers.value[row][col].status = 'neutral';
       } else if (userLetter.toLowerCase() === expected.toLowerCase()) {
         gridAnswers.value[row][col].status = 'correct';
+        // Emit event for correct letter
+        emit('correct-letter');
         autoFocusNext(row, col);
       } else {
         gridAnswers.value[row][col].status = 'incorrect';
+        // Emit event for an incorrect letter
+        emit('incorrect-letter');
       }
     }
 
     function autoFocusNext(row, col) {
       const size = gameData.value.gridSize;
-
       if (col + 1 < size && solutionLetter(row, col + 1)) {
         if (gridAnswers.value[row][col + 1].status !== 'correct') {
           const targetInput = inputRefs.value[row][col + 1];
@@ -97,31 +101,56 @@ export default {
     }
 
     function handleKeydown(event, row, col) {
-      const key = event.key;
-      let newRow = row;
-      let newCol = col;
+  const key = event.key;
+  let dr = 0, dc = 0;
 
-      if (key === 'ArrowUp') newRow = row - 1;
-      else if (key === 'ArrowDown') newRow = row + 1;
-      else if (key === 'ArrowLeft') newCol = col - 1;
-      else if (key === 'ArrowRight') newCol = col + 1;
-      else return;
+  if (key === 'ArrowUp') {
+    dr = -1;
+  } else if (key === 'ArrowDown') {
+    dr = 1;
+  } else if (key === 'ArrowLeft') {
+    dc = -1;
+  } else if (key === 'ArrowRight') {
+    dc = 1;
+  } else {
+    return;
+  }
 
-      event.preventDefault();
+  event.preventDefault();
 
-      if (
-        newRow < 0 ||
-        newRow >= gameData.value.gridSize ||
-        newCol < 0 ||
-        newCol >= gameData.value.gridSize
-      )
-        return;
+  // Function that searches for the next selectable (white) cell in the given direction.
+  function findNextWhiteCell(currentRow, currentCol, dr, dc) {
+    let newRow = currentRow + dr;
+    let newCol = currentCol + dc;
 
+    // Loop until reaching grid boundaries.
+    while (
+      newRow >= 0 &&
+      newRow < gridSize.value &&
+      newCol >= 0 &&
+      newCol < gridSize.value
+    ) {
+      // If the cell has a solution letter, we can select it.
       if (solutionLetter(newRow, newCol)) {
-        const targetInput = inputRefs.value[newRow][newCol];
-        if (targetInput) targetInput.focus();
+        return { row: newRow, col: newCol };
       }
+      // Otherwise, continue in the same direction.
+      newRow += dr;
+      newCol += dc;
     }
+    // If no selectable cell is found, return null.
+    return null;
+  }
+
+  const nextCell = findNextWhiteCell(row, col, dr, dc);
+  if (nextCell) {
+    const targetInput = inputRefs.value[nextCell.row][nextCell.col];
+    if (targetInput) {
+      targetInput.focus();
+    }
+  }
+}
+
 
     const gridSize = computed(() => (gameData.value ? gameData.value.gridSize : 0));
 

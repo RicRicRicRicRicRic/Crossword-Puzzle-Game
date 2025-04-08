@@ -44,7 +44,6 @@ export default {
 };
 </script>
 
-
 <template>
     <div class="definitions-container">
       <div class="column">
