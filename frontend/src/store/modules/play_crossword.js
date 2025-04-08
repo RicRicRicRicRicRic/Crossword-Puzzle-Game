@@ -27,10 +27,10 @@ export const play_cwMutations = {
       state.gridAnswers[row][col].status = status;
     },
     INCREMENT_SCORE(state, timeMultiplier) {
-      state.score += 1.1 * timeMultiplier;
+      state.score += 1.2 * timeMultiplier;
     },
     DECREMENT_SCORE(state, timeMultiplier) {
-      state.score -= 0.55 * timeMultiplier;
+      state.score -= 0.9 * timeMultiplier;
     },
     SET_INITIAL_TIME(state, time) {
       state.initialTime = time;
