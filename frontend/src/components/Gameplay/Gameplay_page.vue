@@ -1,7 +1,6 @@
 //components/Gameplay/Gameplay_page.vue
-
 <script>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import HeaderTimer from './HeaderTimer.vue';
@@ -23,21 +22,11 @@ export default {
     const store = useStore();
     const route = useRoute();
     const gameId = computed(() => route.params.gameId);
-    
+
+    // This flag determines whether FinishGame is displayed.
     const showFinishGame = ref(false);
 
-    function onUpdateTime(newTimeLeft) {
-      store.commit('UPDATE_TIME_LEFT', newTimeLeft);
-    }
-    
-    function onCorrectLetter() {
-      store.commit('INCREMENT_SCORE', store.state.currentTimeLeft);
-    }
-    
-    function onIncorrectLetter() {
-      store.commit('DECREMENT_SCORE', store.state.currentTimeLeft);
-    }
-    
+    // Computed property that checks whether all the letters are correct.
     const gameCompleted = computed(() => {
       const gridSize = store.getters.gridSize;
       if (!gridSize) return false;
@@ -52,14 +41,32 @@ export default {
       }
       return true;
     });
-    
-    const gameFinished = computed(() => {
-      return gameCompleted.value || store.state.currentTimeLeft === 0;
+
+    // Watch the gameCompleted computed property.
+    // When it becomes true, the finished game modal appears.
+    watch(gameCompleted, (newVal) => {
+      if (newVal) {
+        showFinishGame.value = true;
+      }
     });
+
+    // You can also trigger the modal manually via the quit button.
     const onQuitGame = () => {
       showFinishGame.value = true;
     };
 
+    function onUpdateTime(newTimeLeft) {
+      store.commit('UPDATE_TIME_LEFT', newTimeLeft);
+    }
+    
+    function onCorrectLetter() {
+      store.commit('INCREMENT_SCORE', store.state.currentTimeLeft);
+    }
+    
+    function onIncorrectLetter() {
+      store.commit('DECREMENT_SCORE', store.state.currentTimeLeft);
+    }
+    
     return {
       score: computed(() => store.state.score),
       currentTimeLeft: computed(() => store.state.currentTimeLeft),
@@ -67,7 +74,6 @@ export default {
       onUpdateTime,
       onCorrectLetter,
       onIncorrectLetter,
-      gameFinished,
       onQuitGame,
       showFinishGame
     };
@@ -95,13 +101,14 @@ export default {
         </div>
       </div>
     </div>
-    <FinishGame 
-      v-if="gameFinished || showFinishGame" 
-      :score="score" 
-      :currentTimeLeft="currentTimeLeft" 
+    <FinishGame
+      v-if="showFinishGame"
+      :score="score"
+      :currentTimeLeft="currentTimeLeft"
     />
   </div>
 </template>
+
 
 
 <style lang="scss" scoped>
