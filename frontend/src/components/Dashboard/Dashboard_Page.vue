@@ -24,6 +24,7 @@ export default {
     if (savedPage) {
       this.handleButtonClick(savedPage, false);
     }
+    this.$store.dispatch('resetPlayGame');
   },
   methods: {
     /**

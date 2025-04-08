@@ -12,6 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const wordRoutes = require('./routes/wordsearchRoutes');
 const crosswordRoutes = require('./routes/crosswordRoutes');
+const rankRoutes = require('./routes/rankRoutes')
 
 const app = express();
 
@@ -30,7 +31,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/api', authRoutes);
 app.use('/api', profileRoutes);
 app.use('/api/words', wordRoutes);
-app.use('/api',crosswordRoutes )
+app.use('/api', crosswordRoutes )
+app.use('/api', rankRoutes);
 
 // Confirm if server is running
 app.get('/', (req, res) => {

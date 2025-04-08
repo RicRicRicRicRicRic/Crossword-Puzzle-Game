@@ -1,7 +1,9 @@
 //components/Gameplay/Gameplay_page.vue
+
 <script>
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
+import { useRoute } from 'vue-router';
 import HeaderTimer from './HeaderTimer.vue';
 import PlayGrid from './PlayGrid.vue';
 import Definitions from './Definitions.vue';
@@ -19,6 +21,9 @@ export default {
   },
   setup() {
     const store = useStore();
+    const route = useRoute();
+    const gameId = computed(() => route.params.gameId);
+    
     const showFinishGame = ref(false);
 
     function onUpdateTime(newTimeLeft) {
@@ -58,7 +63,7 @@ export default {
     return {
       score: computed(() => store.state.score),
       currentTimeLeft: computed(() => store.state.currentTimeLeft),
-      gameId: computed(() => store.state.gameData?.id),
+      gameId,
       onUpdateTime,
       onCorrectLetter,
       onIncorrectLetter,
@@ -73,7 +78,7 @@ export default {
 <template>
   <div class="HeaderTimer-container">
     <div class="header-bar">
-      <HeaderTimer @updateTime="onUpdateTime" />
+      <HeaderTimer :game-id="gameId" @updateTime="onUpdateTime" />
     </div>
     <div class="gameplay-container">
       <div class="gameplay-panel">
@@ -82,7 +87,7 @@ export default {
         </div>
         <div class="right-column">
           <div class="top-right">
-            <Definitions/>
+            <Definitions />
           </div>
           <div class="bottom-right">
             <Hotbar @quit-game="onQuitGame" />
@@ -97,6 +102,7 @@ export default {
     />
   </div>
 </template>
+
 
 <style lang="scss" scoped>
 .header-bar {
