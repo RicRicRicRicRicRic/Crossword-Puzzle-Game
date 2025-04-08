@@ -131,7 +131,7 @@ exports.getAllGames = async (req, res, next) => {
   }
 };
 
-exports.getGameById = async (req, res, next) => {
+exports.aboutGame = async (req, res, next) => {
   try {
     const gameId = req.params.id;
     

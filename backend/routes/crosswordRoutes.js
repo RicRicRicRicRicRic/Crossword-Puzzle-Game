@@ -6,7 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 router.post('/saveGame', authMiddleware, crosswordController.saveGame);
 router.get('/games', crosswordController.getAllGames);
-router.get('/games/:id', crosswordController.getGameById);
+router.get('/games/:id', crosswordController.aboutGame);
 router.get('/startGame/:id', crosswordController.startGame); 
 
 
