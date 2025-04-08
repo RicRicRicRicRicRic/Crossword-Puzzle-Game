@@ -1,6 +1,4 @@
 //components/Gameplay/Gameplay_page.vue
-
-<!-- components/Gameplay/Gameplay_page.vue -->
 <script>
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { useStore } from 'vuex';
@@ -53,20 +51,10 @@ export default {
     const gameFinished = computed(() => {
       return gameCompleted.value || store.state.currentTimeLeft === 0;
     });
-    
-    // Called when the Hotbar emits a quit-game event.
     const onQuitGame = () => {
       showFinishGame.value = true;
     };
 
-    onMounted(() => {
-      // Optional: any additional mounting behavior
-    });
-    
-    onBeforeUnmount(() => {
-      // Optional: cleanup code
-    });
-    
     return {
       score: computed(() => store.state.score),
       currentTimeLeft: computed(() => store.state.currentTimeLeft),
