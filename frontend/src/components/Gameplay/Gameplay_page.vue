@@ -1,9 +1,9 @@
 //components/Gameplay/Gameplay_page.vue
 
+<!-- components/Gameplay/Gameplay_page.vue -->
 <script>
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
 import HeaderTimer from './HeaderTimer.vue';
 import PlayGrid from './PlayGrid.vue';
 import Definitions from './Definitions.vue';
@@ -21,8 +21,6 @@ export default {
   },
   setup() {
     const store = useStore();
-    const router = useRouter();
-    const showQuitModal = ref(false);
     const showFinishGame = ref(false);
 
     function onUpdateTime(newTimeLeft) {
@@ -56,32 +54,17 @@ export default {
       return gameCompleted.value || store.state.currentTimeLeft === 0;
     });
     
+    // Called when the Hotbar emits a quit-game event.
     const onQuitGame = () => {
-      showQuitModal.value = true;
-    };
-
-    const handlePopState = () => {
-      showQuitModal.value = true;
-    };
-
-    const confirmQuit = () => {
-
-      store.dispatch('RESET_PLAY_GAME');
-      showQuitModal.value = false;
       showFinishGame.value = true;
     };
 
-    const cancelQuit = () => {
-      showQuitModal.value = false;
-    };
-
     onMounted(() => {
-      window.addEventListener('popstate', handlePopState);
-      
+      // Optional: any additional mounting behavior
     });
     
     onBeforeUnmount(() => {
-      window.removeEventListener('popstate', handlePopState);
+      // Optional: cleanup code
     });
     
     return {
@@ -93,9 +76,6 @@ export default {
       onIncorrectLetter,
       gameFinished,
       onQuitGame,
-      showQuitModal,
-      confirmQuit,
-      cancelQuit,
       showFinishGame
     };
   }
@@ -117,36 +97,22 @@ export default {
             <Definitions/>
           </div>
           <div class="bottom-right">
+            <!-- Listen for the quit-game event from Hotbar -->
             <Hotbar @quit-game="onQuitGame" />
           </div>
         </div>
       </div>
     </div>
+    <!-- Render FinishGame if the game naturally finishes or if the user confirms quitting -->
     <FinishGame 
-      v-if="gameFinished && !showQuitModal && !showFinishGame" 
+      v-if="gameFinished || showFinishGame" 
       :score="score" 
       :currentTimeLeft="currentTimeLeft" 
     />
-    <FinishGame 
-      v-if="showFinishGame" 
-      :score="score" 
-      :currentTimeLeft="currentTimeLeft" 
-    />
-    <div v-if="showQuitModal" class="quit-confirmation-modal">
-      <div class="confirmation-content">
-        <h3>Do you really want to quit the game?</h3>
-        <div class="modal-buttons">
-          <button class="yes-btn" @click="confirmQuit">Yes</button>
-          <button class="no-btn" @click="cancelQuit">No</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-
-
 .header-bar {
   position: fixed;
   top: 0;
@@ -159,90 +125,34 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.gameplay-container{
-    margin-top: 65px;
-    height: calc(100vh - 65px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.gameplay-panel{
-    border: 2px solid;
-    height: 600px;
-    width: 1088px;
-    display: flex;
-
-    .left-column {
-        height: 100%;
-        width: 680px;
-        border-right: 2px solid;
-    }
-    .right-column{
-        width: 408px;
-        display: flex;
-        flex-direction: column;
-        .top-right{
-            height: 55%;
-            border-bottom: 2px solid;
-        }
-        .bottom-right{
-            height: 45%;
-        }
-    }
-}
-.quit-confirmation-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+.gameplay-container {
+  margin-top: 65px;
+  height: calc(100vh - 65px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1500;
-  
-  .confirmation-content {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-    
-    h3 {
-      margin-bottom: 1.5rem;
-      font-size: 1.6rem;
-      color: #333;
+}
+.gameplay-panel {
+  border: 2px solid;
+  height: 600px;
+  width: 1088px;
+  display: flex;
+
+  .left-column {
+    height: 100%;
+    width: 680px;
+    border-right: 2px solid;
+  }
+  .right-column {
+    width: 408px;
+    display: flex;
+    flex-direction: column;
+    .top-right {
+      height: 55%;
+      border-bottom: 2px solid;
     }
-    
-    .modal-buttons {
-      display: flex;
-      justify-content: space-around;
-      
-      button {
-        padding: 0.5rem 1.2rem;
-        font-size: 1rem;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background 0.3s;
-      }
-      
-      .yes-btn {
-        background-color: #47b94a;
-        color: #fff;
-        &:hover {
-          background-color: #3aa03a;
-        }
-      }
-      
-      .no-btn {
-        background-color: #c0392b;
-        color: #fff;
-        &:hover {
-          background-color: #a93226;
-        }
-      }
+    .bottom-right {
+      height: 45%;
     }
   }
 }

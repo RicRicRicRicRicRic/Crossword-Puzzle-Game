@@ -10,6 +10,7 @@ export default {
     const store = useStore();
     const activeTab = ref('Score');
     const volume = ref(50);
+    const showQuitModal = ref(false);
     
     const volumeIcon = computed(() => {
       if (volume.value === 0) {
@@ -25,7 +26,16 @@ export default {
     });
     
     const quitGame = () => {
+      showQuitModal.value = true;
+    };
+
+    const confirmQuit = () => {
+      showQuitModal.value = false;
       emit('quit-game');
+    };
+
+    const cancelQuit = () => {
+      showQuitModal.value = false;
     };
     
     return {
@@ -33,7 +43,10 @@ export default {
       activeTab,
       volume,
       volumeIcon,
-      quitGame
+      quitGame,
+      showQuitModal,
+      confirmQuit,
+      cancelQuit
     };
   }
 };
@@ -72,6 +85,15 @@ export default {
             <span class="volume-number">{{ volume }}</span>
           </div>
           <button class="quit-button" @click="quitGame">Quit Game</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="showQuitModal" class="quit-confirmation-modal">
+      <div class="confirmation-content">
+        <h3>Do you really want to quit the game?</h3>
+        <div class="modal-buttons">
+          <button class="yes-btn" @click="confirmQuit">Yes</button>
+          <button class="no-btn" @click="cancelQuit">No</button>
         </div>
       </div>
     </div>
@@ -131,17 +153,17 @@ export default {
     justify-content: center;
 
     .score-display {
-        display: flex;         
-        flex-direction: column;    
-        align-items: center;       
-        justify-content: center;   
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
-        p {
-            margin: 0;              
-            font-size: 20px;
+      p {
+        margin: 0;
+        font-size: 20px;
+      }
     }
   }
-}
 
   .settings-controls {
     display: flex;
@@ -225,6 +247,63 @@ export default {
 
     &:hover {
       background-color: #ff2222;
+    }
+  }
+
+  .quit-confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+
+    .confirmation-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+
+      h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.6rem;
+        color: #333;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: space-around;
+
+        button {
+          padding: 0.5rem 1.2rem;
+          font-size: 1rem;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        .yes-btn {
+          background-color: #47b94a;
+          color: #fff;
+          &:hover {
+            background-color: #3aa03a;
+          }
+        }
+
+        .no-btn {
+          background-color: #c0392b;
+          color: #fff;
+          &:hover {
+            background-color: #a93226;
+          }
+        }
+      }
     }
   }
 }
