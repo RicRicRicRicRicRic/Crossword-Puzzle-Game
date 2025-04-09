@@ -86,3 +86,24 @@ exports.saveScore = async (req, res, next) => {
     if (connection) connection.release();
   }
 };
+
+exports.showLeaderboards = async (req, res, next) => {
+  try {
+    const [leaderboards] = await db.query(`
+      SELECT 
+        l.acc_ID,
+        p.player_name,
+        p.profile_img,
+        l.Total_Score,
+        l.games_completed
+      FROM leaderboards l
+      JOIN player_account p ON l.acc_ID = p.acc_ID
+      ORDER BY l.Total_Score DESC
+    `);
+    
+    res.json(leaderboards);
+  } catch(error) {
+    logger.error(error, 'Error fetching leaderboards');
+    next(error);
+  }
+};

@@ -47,10 +47,9 @@ export default {
     }
   },
   mounted() {
-    // Stop the game timer when the finish screen is shown.
+
     this.$store.dispatch('stopTimer');
     
-    // Automatically call saveScore as soon as the component is mounted.
     if (this.user && this.user.acc_ID && !this.scoreSaved) {
       this.saveScore();
     }
@@ -87,11 +86,9 @@ export default {
       }
     },
     async finishGame() {
-      // As a fallback, if saveScore wasn't successful yet, try saving it once more.
       if (this.user && this.user.acc_ID && !this.scoreSaved) {
         await this.saveScore();
       }
-      // Reset the game state and navigate to the Dashboard.
       this.$store.dispatch('resetPlayGame');
       this.$router.push('/Dashboard');
     }
