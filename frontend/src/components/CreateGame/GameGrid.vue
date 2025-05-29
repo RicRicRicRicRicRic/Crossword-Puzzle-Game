@@ -68,8 +68,8 @@ export default {
 
     const cellFontSize = computed(() => {
       const fraction = (store.state.gridSize - 9) / (20 - 9);
-      const maxFontSize = 24; 
-      const minFontSize = 14; 
+      const maxFontSize = 24;
+      const minFontSize = 14;
       const fontSize = minFontSize + (maxFontSize - minFontSize) * (1 - fraction);
       return fontSize + 'px';
     });
@@ -88,25 +88,15 @@ export default {
     <div class="controls-container">
       <div class="slider-container">
         <label for="gridSizeSlider">Grid Size: {{ gridSize }} x {{ gridSize }}</label>
-        <input
-          id="gridSizeSlider"
-          type="range"
-          min="9"
-          max="20"
-          :value="gridSize"
-          @input="onGridSizeChange($event.target.value)"
-        />
+        <input id="gridSizeSlider" type="range" min="9" max="20" :value="gridSize"
+          @input="onGridSizeChange($event.target.value)" />
       </div>
       <label>Timer: {{ timerMinutes }} minutes</label>
     </div>
     <div class="grid" :style="gridStyle">
-      <div
-        v-for="(cell, index) in cellDetails"
-        :key="index"
-        class="grid-cell"
+      <div v-for="(cell, index) in cellDetails" :key="index" class="grid-cell"
         :class="{ conflict: cell.conflict, 'black-cell': cell.letters.length === 0 }"
-        :style="{ fontSize: cellFontSize }"
-      >
+        :style="{ fontSize: cellFontSize }">
         <!-- Number label in the upper left corner -->
         <span v-if="cell.number" class="cell-number">{{ cell.number }}</span>
         <!-- Display the letter (if any) centered in the cell -->
@@ -117,11 +107,23 @@ export default {
 </template>
 
 <style scoped lang="scss">
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow-green: 0 0 6px $neon-green, 0 0 12px $neon-green;
+$glow-blue: 0 0 6px $neon-blue, 0 0 12px $neon-blue;
+$glow-pink: 0 0 6px $neon-pink, 0 0 12px $neon-pink;
+// $gradient-neon: linear-gradient(135deg, $neon-green, $neon-pink);
+
 .gamegrid-container {
   display: flex;
   flex-direction: column;
-  height: 100%; 
+  height: 100%;
   width: 100%;
+  background-color: $bg-dark;
+  color: white;
+  font-family: 'Poppins', sans-serif;
 }
 
 .controls-container {
@@ -136,8 +138,44 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  input[type="range"] {
+
+  label {
+    margin-right: 10px;
+  }
+
+  input[type='range'] {
     width: 350px;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 5px;
+    background: $neon-blue;
+    outline: none;
+    box-shadow: $glow-blue;
+    transition: background 0.3s ease;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 2px solid $neon-blue;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: $glow-blue;
+    }
+
+    &::-moz-range-thumb {
+      appearance: none; // ✅ For Firefox
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 2px solid $neon-blue;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: $glow-blue;
+    }
   }
 }
 
@@ -146,21 +184,33 @@ export default {
   width: 100%;
   height: 100%;
   display: grid;
+  background: $bg-dark;
+}
+
+.grid {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  background: $bg-dark;
 }
 
 .grid-cell {
-  position: relative; /* Needed for absolute positioning of the number */
-  border: 1px solid #000;
+  position: relative;
+  border: 1px solid #333;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #111;
+  font-weight: bold;
   transition: background-color 0.2s;
-  background-color: #fff;
 }
 
 .grid-cell.conflict {
   background-color: #f16666;
+  color: #fff;
+  text-shadow: none;
 }
 
 .black-cell {
@@ -173,5 +223,7 @@ export default {
   left: 0;
   font-size: 0.7em;
   padding: 0 2px;
+  color: $neon-pink;
+  text-shadow: $glow-pink;
 }
 </style>

@@ -1,7 +1,7 @@
 //components/Dashboard/AccountSettings.vue
 <script>
 import api from '@/services/api';
-import defaultpfp from '@/assets/defaultpfp.png'; 
+import defaultpfp from '@/assets/defaultpfp.png';
 export default {
   name: 'AccountSettings',
   props: {
@@ -21,7 +21,7 @@ export default {
       editingPassword: false,
 
       editingProfileImage: false,
-      newProfileImg: null,  
+      newProfileImg: null,
 
       editedPlayerName: '',
       editedEmail: '',
@@ -76,7 +76,7 @@ export default {
         player_name: this.user.player_name,
         email: this.user.email,
         password: this.user.password,
-        profile_img: this.user.profile_img 
+        profile_img: this.user.profile_img
       };
 
       if (field === 'player_name') {
@@ -183,13 +183,8 @@ export default {
           <button v-if="!editingProfileImage" class="change-pfp-btn" @click="triggerFileInput">
             Change Profile
           </button>
-          <input
-            ref="fileInput"
-            type="file"
-            accept="image/*"
-            style="display: none"
-            @change="handleProfileImageChange"
-          />
+          <input ref="fileInput" type="file" accept="image/*" style="display: none"
+            @change="handleProfileImageChange" />
           <div v-if="editingProfileImage" class="btn-row">
             <button @click="saveProfileImage">Save</button>
             <button @click="cancelProfileImage">Cancel</button>
@@ -204,24 +199,9 @@ export default {
         <div class="input-item">
           <label for="player_name">Name:</label>
           <div class="input-container">
-            <input
-              v-if="editingPlayerName"
-              id="player_name"
-              type="text"
-              v-model="editedPlayerName"
-            />
-            <input
-              v-else
-              id="player_name"
-              type="text"
-              :value="user.player_name"
-              readonly
-            />
-            <button
-              v-if="!editingPlayerName"
-              class="edit-btn"
-              @click="editField('player_name')"
-            >
+            <input v-if="editingPlayerName" id="player_name" type="text" v-model="editedPlayerName" />
+            <input v-else id="player_name" type="text" :value="user.player_name" readonly />
+            <button v-if="!editingPlayerName" class="edit-btn" @click="editField('player_name')">
               Edit
             </button>
             <div v-if="editingPlayerName" class="btn-row">
@@ -233,24 +213,9 @@ export default {
         <div class="input-item">
           <label for="email">Email:</label>
           <div class="input-container">
-            <input
-              v-if="editingEmail"
-              id="email"
-              type="email"
-              v-model="editedEmail"
-            />
-            <input
-              v-else
-              id="email"
-              type="email"
-              :value="user.email"
-              readonly
-            />
-            <button
-              v-if="!editingEmail"
-              class="edit-btn"
-              @click="editField('email')"
-            >
+            <input v-if="editingEmail" id="email" type="email" v-model="editedEmail" />
+            <input v-else id="email" type="email" :value="user.email" readonly />
+            <button v-if="!editingEmail" class="edit-btn" @click="editField('email')">
               Edit
             </button>
             <div v-if="editingEmail" class="btn-row">
@@ -263,32 +228,14 @@ export default {
           <label for="password">Password:</label>
           <div class="input-container">
             <div class="password-wrapper">
-              <input
-                v-if="editingPassword"
-                id="password"
-                :type="showPassword ? 'text' : 'password'"
-                v-model="editedPassword"
-              >
-              <input
-                v-else
-                id="password"
-                :type="showPassword ? 'text' : 'password'"
-                :value="user.password"
-                readonly
-              >
-              <button
-                type="button"
-                class="toggle-password"
-                @click="togglePasswordVisibility"
-              >
+              <input v-if="editingPassword" id="password" :type="showPassword ? 'text' : 'password'"
+                v-model="editedPassword">
+              <input v-else id="password" :type="showPassword ? 'text' : 'password'" :value="user.password" readonly>
+              <button type="button" class="toggle-password" @click="togglePasswordVisibility">
                 {{ showPassword ? '🙈' : '👁️' }}
               </button>
             </div>
-            <button
-              v-if="!editingPassword"
-              class="edit-btn"
-              @click="editField('password')"
-            >
+            <button v-if="!editingPassword" class="edit-btn" @click="editField('password')">
               Edit
             </button>
             <div v-if="editingPassword" class="btn-row">
@@ -317,33 +264,53 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
+$neon-color: #9a7bff;
+$bg-color: #0a0a0a;
+$font-color: #fff;
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  font-family: 'Courier New', Courier, monospace;
+  color: #fff;
 
   .modal {
-    background-color: #fff;
+    background-color: #222;
     padding: 20px;
     border-radius: 8px;
     min-width: 350px;
     min-height: 500px;
+    border: 2px solid $neon-color;
+    box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
+    transition: all 0.3s ease;
   }
 
   .modal-confirmation {
-    background-color: #fff;
+    background-color: #000;
+    color: $font-color;
     padding: 20px;
     border-radius: 8px;
     min-width: 350px;
-    min-height: 80px;
-    text-align: center;
+    box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
+
+    &.modal {
+      min-height: 500px;
+    }
+
+    &.modal-confirmation {
+      min-height: 80px;
+      text-align: center;
+    }
   }
 }
 
@@ -357,11 +324,29 @@ export default {
   gap: 10px;
   margin-top: 5px;
 
-  > input {
-    padding: 5px;
-    box-sizing: border-box;
-    flex: 1;
-    height: 35px; 
+  >input {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    width: 93%;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid $neon-color;
+    border-radius: 8px;
+    color: $font-color;
+    font-size: 1rem;
+    box-shadow: 0 0 5px $neon-color;
+    outline: none;
+    transition: 0.3s ease;
+
+    &::placeholder {
+      color: color.adjust($neon-color, $lightness: 20%);
+    }
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 0 10px $neon-color;
+    }
   }
 }
 
@@ -372,10 +357,28 @@ export default {
   align-items: center;
 
   input {
-    flex: 1;
-    width: auto;
-    padding-right: 2.5rem;
-    height: 30px; 
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    width: 93%;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid $neon-color;
+    border-radius: 8px;
+    color: $font-color;
+    font-size: 1rem;
+    box-shadow: 0 0 5px $neon-color;
+    outline: none;
+    transition: 0.3s ease;
+
+    &::placeholder {
+      color: color.adjust($neon-color, $lightness: 20%);
+    }
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 0 10px $neon-color;
+    }
   }
 
   .toggle-password {
@@ -385,9 +388,32 @@ export default {
     transform: translateY(-50%);
     background: transparent;
     border: none;
+    color: #0ff;
     cursor: pointer;
     font-size: 1rem;
     padding: 0;
+  }
+}
+
+button {
+  padding: 6px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  border: 2px solid $neon-color;
+  background: transparent;
+  color: $neon-color;
+  text-shadow: 0 0 5px $neon-color;
+  box-shadow: 0 0 5px $neon-color, 0 0 10px $neon-color;
+  transition: 0.3s ease;
+
+  &:hover {
+    background-color: $neon-color;
+    color: $bg-color;
+    text-shadow: none;
+    box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
   }
 }
 
@@ -421,12 +447,25 @@ export default {
   overflow: hidden;
   display: block;
   margin: 0 auto 10px;
+  border: 2px solid $neon-color;
+  box-shadow: 0 0 10px $neon-color, 0 0 15px $neon-color;
 }
 
 .change-pfp-btn {
   padding: 5px 10px;
   font-size: 0.9rem;
   cursor: pointer;
+  background-color: transparent;
+  color: $neon-color;
+  border: 1px solid $neon-color;
+  box-shadow: 0 0 5px $neon-color, 0 0 10px $neon-color;
+  font-family: 'Courier New', Courier, monospace;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    background-color: $neon-color;
+    color: #000;
+    box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
+  }
 }
 </style>
-

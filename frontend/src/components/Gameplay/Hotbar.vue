@@ -101,6 +101,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow: 0 0 10px, 0 0 20px;
+
 .hotbar-container {
   position: relative;
   display: flex;
@@ -109,6 +115,8 @@ export default {
   justify-content: center;
   height: 100%;
   overflow: hidden;
+  background-color: $bg-dark;
+  color: white;
 
   .tabs {
     position: absolute;
@@ -119,7 +127,7 @@ export default {
     height: 40px;
     justify-content: center;
     align-items: center;
-    border-bottom: 2px solid;
+    border-bottom: 2px solid $neon-pink;
 
     button {
       flex: 1;
@@ -129,17 +137,21 @@ export default {
       text-align: center;
       border: none;
       height: 100%;
-      background-color: #fff;
+      background-color: #111;
+      color: white;
       cursor: pointer;
-      border: 1px solid #ddd;
-      transition: background-color 0.2s;
+      border: 1px solid $neon-blue;
+      box-shadow: 0 0 10px $neon-blue;
+      transition: background-color 0.2s, box-shadow 0.2s;
 
       &.active {
-        background-color: #e0e0e0;
+        background-color: #222;
+        box-shadow: 0 0 20px $neon-green;
       }
 
       &:hover {
-        background-color: #f0f0f0;
+        background-color: #333;
+        box-shadow: 0 0 15px $neon-blue;
       }
     }
   }
@@ -161,6 +173,7 @@ export default {
       p {
         margin: 0;
         font-size: 20px;
+        text-shadow: 0 0 10px $neon-green;
       }
     }
   }
@@ -177,9 +190,11 @@ export default {
     align-items: center;
     gap: 10px;
     width: 250px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    background: #111;
+    border: 1px solid $neon-blue;
     border-radius: 5px;
+    padding: 5px;
+    box-shadow: 0 0 10px $neon-blue;
 
     .volume-icon {
       font-size: 1.5rem;
@@ -189,6 +204,7 @@ export default {
       align-items: center;
       text-align: center;
       margin-left: 5px;
+      color: $neon-green;
     }
 
     .volume-slider {
@@ -198,7 +214,7 @@ export default {
       width: 100%;
       height: 3px;
       border-radius: 3px;
-      background: #ddd;
+      background: $neon-blue;
       outline: none;
       margin: 0;
       padding: 0;
@@ -209,9 +225,10 @@ export default {
         width: 16px;
         height: 16px;
         border-radius: 50%;
-        background: #4a90e2;
+        background: $neon-green;
         cursor: pointer;
         border: none;
+        box-shadow: 0 0 5px $neon-green;
       }
 
       &::-moz-range-thumb {
@@ -219,11 +236,12 @@ export default {
         height: 16px;
         border: none;
         border-radius: 50%;
-        background: #4a90e2;
+        background: $neon-green;
         cursor: pointer;
         position: relative;
         top: 50%;
         transform: translateY(-50%);
+        box-shadow: 0 0 5px $neon-green;
       }
     }
 
@@ -231,22 +249,25 @@ export default {
       width: 2rem;
       text-align: center;
       font-size: 1rem;
+      color: white;
     }
   }
 
   .quit-button {
     padding: 10px 10px;
     margin-top: 20px;
-    background-color: #ff5555;
-    color: #fff;
+    background-color: $neon-pink;
+    color: white;
     border: none;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    box-shadow: 0 0 10px $neon-pink;
+    transition: background-color 0.3s, box-shadow 0.3s;
 
     &:hover {
-      background-color: #ff2222;
+      background-color: $neon-blue;
+      box-shadow: 0 0 20px $neon-blue;
     }
   }
 
@@ -263,16 +284,17 @@ export default {
     z-index: 1500;
 
     .confirmation-content {
-      background: #fff;
+      background: #111;
       padding: 2rem;
       border-radius: 8px;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      box-shadow: 0 0 20px $neon-green;
 
       h3 {
         margin-bottom: 1.5rem;
         font-size: 1.6rem;
-        color: #333;
+        color: white;
+        text-shadow: 0 0 10px $neon-green;
       }
 
       .modal-buttons {
@@ -285,22 +307,28 @@ export default {
           border: none;
           border-radius: 5px;
           cursor: pointer;
-          transition: background 0.3s;
+          transition: background 0.3s, box-shadow 0.3s;
         }
 
         .yes-btn {
-          background-color: #47b94a;
-          color: #fff;
+          background-color: $neon-green;
+          color: white;
+          box-shadow: 0 0 10px $neon-green;
+
           &:hover {
-            background-color: #3aa03a;
+            background-color: $neon-blue;
+            box-shadow: 0 0 20px $neon-blue;
           }
         }
 
         .no-btn {
-          background-color: #c0392b;
-          color: #fff;
+          background-color: $neon-pink;
+          color: white;
+          box-shadow: 0 0 10px $neon-pink;
+
           &:hover {
-            background-color: #a93226;
+            background-color: $neon-green;
+            box-shadow: 0 0 20px $neon-green;
           }
         }
       }

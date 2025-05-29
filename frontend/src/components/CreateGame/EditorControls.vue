@@ -37,11 +37,11 @@ export default {
       showConfirmation.value = false;
     }
 
-    return { 
-      activeTab, 
-      move, 
-      setDirection, 
-      saveGame, 
+    return {
+      activeTab,
+      move,
+      setDirection,
+      saveGame,
       resetGame,
       showConfirmation,
       confirmSaveGame,
@@ -54,14 +54,10 @@ export default {
 <template>
   <div class="editor-controls">
     <div class="tabs">
-      <button 
-        :class="{ active: activeTab === 'controls' }" 
-        @click="activeTab = 'controls'">
+      <button :class="{ active: activeTab === 'controls' }" @click="activeTab = 'controls'">
         Controls
       </button>
-      <button 
-        :class="{ active: activeTab === 'save' }" 
-        @click="activeTab = 'save'">
+      <button :class="{ active: activeTab === 'save' }" @click="activeTab = 'save'">
         Save
       </button>
     </div>
@@ -88,15 +84,15 @@ export default {
 
     <!-- Confirmation modal overlay -->
     <div v-if="showConfirmation" class="modal-overlay">
-      <ConfirmationSave 
-        @confirm="confirmSaveGame" 
-        @cancel="cancelSaveGame" 
-      />
+      <ConfirmationSave @confirm="confirmSaveGame" @cancel="cancelSaveGame" />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+$neon-blue: #00ffff;
+$bg-color: #0a0a0a;
+
 .editor-controls {
   position: relative;
   display: flex;
@@ -105,6 +101,7 @@ export default {
   justify-content: center;
   height: 40vh;
   overflow: hidden;
+  color: $neon-blue;
 
   .tabs {
     position: absolute;
@@ -114,28 +111,33 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #ccc;
-    
+    border-bottom: 1px solid $neon-blue;
+
     button {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
       flex: 1;
       padding: 0.5rem 1rem;
-      border: none;
-      background-color: #fff;
+      border: 1px solid $neon-blue;
+      background-color: transparent;
+      color: $neon-blue;
       cursor: pointer;
-      transition: background-color 0.2s;
-      
+      text-shadow: 0 0 5px $neon-blue;
+      box-shadow: 0 0 5px $neon-blue;
+      transition: 0.3s;
+
+      &:hover,
+      &:active,
       &.active {
-        background-color: #e0e0e0;
-      }
-      
-      &:hover {
-        background-color: #f0f0f0;
+        background: $neon-blue;
+        color: $bg-color;
+        box-shadow: 0 0 10px $neon-blue, 0 0 20px $neon-blue;
       }
     }
   }
 
   .content {
-    margin-top: 2rem; 
+    margin-top: 2rem;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -148,7 +150,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -159,8 +161,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  
-  > button,
+
+  >button,
   .middle-row {
     margin: 0.3rem 0;
   }
@@ -174,14 +176,17 @@ export default {
     font-size: 1.2rem;
     width: 2.5rem;
     height: 2.5rem;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
+    border: 1px solid $neon-blue;
+    background-color: transparent;
+    color: $neon-blue;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    text-shadow: 0 0 3px $neon-blue;
+    box-shadow: 0 0 5px $neon-blue;
+    transition: box-shadow 0.2s;
 
     &:hover {
-      background-color: #e0e0e0;
+      box-shadow: 0 0 10px $neon-blue;
     }
   }
 }
@@ -193,15 +198,23 @@ export default {
   margin-top: 30px;
 
   button {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
     padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    border-radius: 4px;
+    border: 1px solid $neon-blue;
+    background-color: transparent;
+    color: $neon-blue;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    text-shadow: 0 0 3px $neon-blue;
+    box-shadow: 0 0 5px $neon-blue;
+    transition: 0.3s;
 
-    &:hover {
-      background-color: #f0f0f0;
+    &:hover,
+    &:active {
+      background: $neon-blue;
+      color: $bg-color;
+      box-shadow: 0 0 10px $neon-blue, 0 0 20px $neon-blue;
     }
   }
 }
@@ -213,16 +226,24 @@ export default {
   gap: 1rem;
 
   button {
-    width: 80%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13x;
+    width: 100%;
     padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    border-radius: 4px;
+    border: 1px solid $neon-blue;
+    background-color: transparent;
+    color: $neon-blue;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    text-shadow: 0 0 3px $neon-blue;
+    box-shadow: 0 0 5px $neon-blue;
+    transition: 0.3s;
 
-    &:hover {
-      background-color: #f0f0f0;
+    &:hover,
+    &:active {
+      background: $neon-blue;
+      color: $bg-color;
+      box-shadow: 0 0 10px $neon-blue, 0 0 20px $neon-blue;
     }
   }
 }

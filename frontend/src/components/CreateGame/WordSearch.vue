@@ -119,23 +119,48 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
+$neon-color: #9a7bff;
+$bg-color: #0a0a0a;
+$font-color: #fff;
+
 .wordsearch-container {
-  height: 100%;
-  overflow: hidden;
-  
+  width: 100%;
+  height: auto;
+  color: $font-color;
+  font-family: 'Poppins', sans-serif;
+
   .input-box {
-    width: 90%;
-    margin: 10px auto 20px; 
+    width: 98%;
+    max-width: 500px;
+    margin: 10px auto 20px;
     position: relative;
-    border-bottom: 2px solid;
-    
+    display: flex;
+    justify-content: center;
+
     input {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      box-sizing: border-box;
+      padding: 12px;
+      font-size: 1rem;
+      background: transparent;
+      border: 2px solid $neon-color;
+      border-radius: 8px;
+      color: $font-color;
+      box-shadow: 0 0 5px $neon-color;
+      outline: none;
+      transition: 0.3s ease;
+
+      &::placeholder {
+        color: color.adjust($neon-color, $lightness: 20%);
+      }
+
+      &:hover,
+      &:focus {
+        box-shadow: 0 0 10px $neon-color;
+      }
     }
-    
+
     .dropdown {
       list-style: none;
       margin: 0;
@@ -144,43 +169,57 @@ export default {
       top: 100%;
       left: 0;
       right: 0;
-      background: #fff;
-      border: 1px solid #ccc;
+      background: $bg-color;
+      border: 1px solid $neon-color;
+      box-shadow: 0 0 10px $neon-color;
       max-height: 150px;
       overflow-y: auto;
-      
+      z-index: 10;
+
       li {
         padding: 10px;
         cursor: pointer;
-        
+        color: $font-color;
+
         &:hover {
-          background: #eee;
+          background: color.adjust($neon-color, $lightness: -60%);
         }
       }
     }
   }
 
   .definition {
-    width: 90%;
-    margin: 0 auto 20px; 
+    width: 87%;
+    margin: 0 auto 20px;
     padding: 10px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+    border: 2px solid $neon-color;
+    border-radius: 8px;
+    box-shadow: 0 0 10px $neon-color;
+    background-color: rgba(0, 0, 0, 0.3);
     height: 50%;
     display: flex;
     flex-direction: column;
-    
-    h3 {
-      margin: 0;
+
+    .selected-word {
+      h3 {
+        margin: 0;
+        text-shadow: 0 0 5px $neon-color, 0 0 10px $neon-color;
+      }
+
+      span {
+        font-size: 0.9rem;
+        color: color.adjust($neon-color, $lightness: 20%);
+      }
     }
-    
+
     .definition-content {
-      margin-top: 5px;
+      margin-top: 10px;
       overflow-y: auto;
       flex: 1;
-      
+
       p {
         margin-top: 5px;
+        color: $font-color;
       }
     }
   }
@@ -190,17 +229,25 @@ export default {
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    
+
     button {
       padding: 0.5rem 1rem;
-      border: 1px solid #ccc;
-      background-color: #fff;
-      border-radius: 4px;
+      background: transparent;
+      border: 2px solid $neon-color;
+      color: $neon-color;
+      font-weight: 500;
+      border-radius: 8px;
+      text-shadow: 0 0 5px $neon-color;
+      box-shadow: 0 0 5px $neon-color;
       cursor: pointer;
-      transition: background-color 0.2s;
-      
+      transition: 0.3s;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+
       &:hover {
-        background-color: #f0f0f0;
+        background: $neon-color;
+        color: $bg-color;
+        box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
       }
     }
   }

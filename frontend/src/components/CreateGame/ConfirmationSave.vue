@@ -44,16 +44,25 @@
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
+$neon-color: #9a7bff;
+$bg-color: #0a0a0a;
+$font-color: #fff;
+
 .confirmation-popup {
-  background: #fff;
+  background: $bg-color;
   padding: 2rem;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px $neon-color;
+  color: $font-color;
+  font-family: 'Poppins', sans-serif;
 
   h3 {
     margin-top: 0;
     margin-bottom: 1rem;
+    text-shadow: 0 0 5px $neon-color, 0 0 10px $neon-color;
   }
 
   .input-group {
@@ -61,24 +70,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
     label {
       margin-bottom: 0.5rem;
       font-weight: 500;
+      color: $font-color;
     }
-    
+
     input {
+      font-family: 'Poppins', sans-serif;
       width: 100%;
       max-width: 300px;
       padding: 0.5rem;
-      border: 1px solid #ccc;
+      background: transparent;
+      border: 2px solid $neon-color;
       border-radius: 4px;
+      color: $font-color;
       font-size: 1rem;
-      
+      box-shadow: 0 0 5px $neon-color;
+      outline: none;
+      transition: box-shadow 0.3s ease;
+
+      &::placeholder {
+        color: color.adjust($neon-color, $lightness: 20%);
+      }
+
+      &:hover,
       &:focus {
-        outline: none;
-        border-color: #0066cc;
-        box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        box-shadow: 0 0 10px $neon-color;
       }
     }
   }
@@ -90,29 +109,32 @@
     gap: 1rem;
 
     button {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
       padding: 0.5rem 1.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      background: transparent;
+      border: 2px solid $neon-color;
+      color: $neon-color;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.2s;
+      font-weight: 500;
+      text-shadow: 0 0 5px $neon-color;
+      box-shadow: 0 0 5px $neon-color;
+      transition: 0.3s;
 
       &:hover:not(:disabled) {
-        background-color: #f0f0f0;
+        background: $neon-color;
+        color: $bg-color;
+        box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
       }
-      
+
       &:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
       }
-      
+
       &:first-child {
-        background-color: #0066cc;
-        color: white;
-        border-color: #0055aa;
-        
-        &:hover:not(:disabled) {
-          background-color: #0055aa;
-        }
+        background-color: transparent;
       }
     }
   }

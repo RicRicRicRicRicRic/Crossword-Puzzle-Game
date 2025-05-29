@@ -59,7 +59,7 @@ export default {
           <div class="score">Score</div>
           <div class="games">Games</div>
         </li>
-				<div class="plyaer-list">
+				<div class="player-list">
 					<li v-for="(player, index) in leaderboards" :key="player.acc_ID" class="leaderboard-item">
           <div class="rank">{{ player.Total_Score > 0 ? (index + 1) : '-' }}</div>
           <div class="player-info">
@@ -77,69 +77,88 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$neon-yellow: #cfff04;
+$bg-dark: #0a0a0a;
+
 .leaderboards-container {
   width: 100%;
-  margin: 0 auto;
-	height: calc(100vh - 45px);
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  height: calc(100vh - 45px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $bg-dark;
+  color: white;
 }
 
 .leaderboards-panel {
-  background-color: #f8f9fa;
-	width: 900px;
-	height: 500px;
-  border-radius: 8px;
-	border: 1px solid;
+  background-color: #111;
+  width: 900px;
+  height: 500px;
+  border-radius: 10px;
+  border: 2px solid $neon-green;
+  box-shadow: 0 0 15px $neon-green;
   padding: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .loading, .error, .no-data {
   text-align: center;
   padding: 20px;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 5px $neon-blue;
 }
 
 .error {
-  color: #e74c3c;
+  color: $neon-pink;
+  text-shadow: 0 0 8px $neon-pink;
 }
 
 .leaderboards-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .leaderboard-header {
   display: flex;
-  font-weight: bold;
   padding: 10px 0;
-  border-bottom: 2px solid #ddd;
-  background-color: #eaeaea;
-  color: #333;
+  border-bottom: 2px solid $neon-blue;
+  background-color: #000;
+  color: $neon-green;
+  font-weight: bold;
+  text-shadow: 0 0 5px $neon-green;
 }
 
 .leaderboard-item {
   display: flex;
   padding: 12px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #333;
   align-items: center;
-  
+  transition: background-color 0.3s;
+
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: #1a1a1a;
   }
 }
 
 .player-list {
-	overflow-y: auto;
+  overflow-y: auto;
 }
-
 
 .rank {
   flex: 0 0 15%;
   text-align: center;
-  font-weight: bold;
+  color: $neon-blue;
+  text-shadow: 0 0 5px $neon-blue;
 }
 
 .player-info {
@@ -154,20 +173,29 @@ export default {
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid $neon-green;
+  box-shadow: 0 0 10px $neon-green;
 }
 
 .player-name {
-  font-weight: 500;
+  font-weight: bold;
+  color: $neon-green;
+  text-shadow: 0 0 5px $neon-green;
 }
 
 .score {
   flex: 0 0 25%;
   text-align: center;
-  font-weight: 500;
+  font-weight: bold;
+  color: $neon-yellow;
+  text-shadow: 0 0 5px $neon-yellow;
 }
 
 .games {
   flex: 0 0 20%;
   text-align: center;
+  font-weight: bold;
+  color: $neon-pink;
+  text-shadow: 0 0 5px $neon-pink;
 }
 </style>

@@ -109,49 +109,76 @@ export default {
   </div>
 </template>
 
-
-
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow: 0 0 10px, 0 0 20px;
+
+.HeaderTimer-container {
+  background-color: $bg-dark;
+  color: white;
+  height: 100vh;
+}
+
 .header-bar {
   position: fixed;
   top: 0;
   width: 100%;
   height: 65px;
-  border-bottom: 2px solid;
-  background-color: white;
+  border-bottom: 2px solid $neon-pink;
+  background-color: #111;
   font-size: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: $neon-green;
+  box-shadow: 0 0 10px $neon-pink;
 }
+
 .gameplay-container {
   margin-top: 65px;
   height: calc(100vh - 65px);
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: $bg-dark;
 }
+
 .gameplay-panel {
-  border: 2px solid;
+  border: 2px solid $neon-green;
   height: 600px;
   width: 1088px;
   display: flex;
+  border-radius: 10px;
+  background-color: #111;
+  box-shadow: 0 0 20px $neon-green;
 
   .left-column {
     height: 100%;
     width: 680px;
-    border-right: 2px solid;
+    border-right: 2px solid $neon-blue;
+    padding: 10px;
+    box-shadow: inset 0 0 10px $neon-blue;
   }
+
   .right-column {
     width: 408px;
     display: flex;
     flex-direction: column;
+
     .top-right {
       height: 55%;
-      border-bottom: 2px solid;
+      border-bottom: 2px solid $neon-pink;
+      padding: 10px;
+      box-shadow: inset 0 0 10px $neon-pink;
     }
+
     .bottom-right {
       height: 45%;
+      padding: 10px;
+      box-shadow: inset 0 0 10px $neon-green;
     }
   }
 }

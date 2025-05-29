@@ -45,69 +45,83 @@ export default {
 </script>
 
 <template>
-    <div class="definitions-container">
-      <div class="column">
-        <div class="across">
-          <div class="header">
-            <h4>Across Definition</h4>
-          </div>
-          <ul class="definitions">
-            <li
-              v-for="(item, index) in acrossWords"
-              :key="index"
-              class="definition-item"
-              @click="selectWord(item.word)"
-            >
-              <strong>{{ index + 1 }}. </strong>{{ item.definition }}
-            </li>
-          </ul>
+  <div class="definitions-container">
+    <div class="column">
+      <div class="across">
+        <div class="header">
+          <h4>Across Definition</h4>
         </div>
-      </div>
-      <div class="column">
-        <div class="down">
-          <div class="header">
-            <h4>Down Definition</h4>
-          </div>
-          <ul class="definitions">
-            <li
-              v-for="(item, index) in downWords"
-              :key="index"
-              class="definition-item"
-
-            >
-              <strong>{{ index + 1 }}. </strong>{{ item.definition }}
-            </li>
-          </ul>
-        </div>
+        <ul class="definitions">
+          <li
+            v-for="(item, index) in acrossWords"
+            :key="index"
+            class="definition-item"
+            :class="{ selected: isSelected(item.word) }"
+            @click="selectWord(item.word)"
+          >
+            <strong>{{ index + 1 }}. </strong>{{ item.definition }}
+          </li>
+        </ul>
       </div>
     </div>
-  </template>
-  
+    <div class="column">
+      <div class="down">
+        <div class="header">
+          <h4>Down Definition</h4>
+        </div>
+        <ul class="definitions">
+          <li
+            v-for="(item, index) in downWords"
+            :key="index"
+            class="definition-item"
+            :class="{ selected: isSelected(item.word) }"
+            @click="selectWord(item.word)"
+          >
+            <strong>{{ index + 1 }}. </strong>{{ item.definition }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow: 0 0 5px, 0 0 10px;
+
 .definitions-container {
   height: 100%;
   display: flex;
   flex-direction: row;
   overflow: hidden;
+  background-color: $bg-dark;
+  color: white;
+  border: 2px solid $neon-pink;
+  box-shadow: 0 0 15px $neon-pink;
 
   .column {
     flex: 1;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    border: 1px solid $neon-blue;
+    margin: 5px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px $neon-blue;
+    overflow: hidden;
 
     .header {
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      width: 100%;
+      background-color: #111;
+      color: $neon-green;
+      text-shadow: 0 0 10px $neon-green;
       height: 40px;
-      border-bottom: 2px solid;
-      flex-shrink: 0;
+      border-bottom: 2px solid $neon-pink;
+      font-weight: bold;
     }
 
     .definitions {
@@ -119,13 +133,25 @@ export default {
     }
 
     .definition-item {
-      padding: 5px;
-      border-bottom: 1px dashed #ccc;
-      transition: background-color 0.2s;
+      padding: 10px;
+      border-bottom: 1px dashed $neon-blue;
+      transition: background-color 0.2s, color 0.2s;
       cursor: pointer;
+      color: white;
+      text-shadow: 0 0 3px $neon-blue;
 
+      &:hover {
+        background-color: rgba(0, 255, 255, 0.1);
+        box-shadow: 0 0 8px $neon-blue;
+      }
+
+      &.selected {
+        background-color: $neon-green;
+        color: #000;
+        text-shadow: none;
+        box-shadow: 0 0 10px $neon-green;
+      }
     }
-
   }
 
   .across,
@@ -134,8 +160,6 @@ export default {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    min-height: 0;
   }
-
 }
 </style>

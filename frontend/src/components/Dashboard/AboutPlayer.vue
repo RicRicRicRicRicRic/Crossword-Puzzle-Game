@@ -71,25 +71,29 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+$neon-blue: #00ffff;
+
 .about-container {
   position: relative;
   display: inline-block;
   margin-left: -1px;
 
   .pfp-container {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .user-pfp {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      overflow: hidden;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      .user-pfp {
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          border: 2px solid $neon-blue;
+          overflow: hidden;
+          box-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff;
+        }
     }
-  }
 
   .info-container {
     position: absolute;
@@ -99,10 +103,36 @@ export default {
     opacity: 0;
     transition: opacity 200ms ease;
     white-space: nowrap;
-    font-size: 17px;
+    font-size: 14px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #0ff;
+    transition: 0.3s ease-in;
 
     p {
       margin: 0;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    button {
+      margin-top: 8px;
+      padding: 5px 10px;
+      background-color: #000;
+      color: #0ff;
+      border: 1px solid #0ff;
+      box-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+
+      &:hover {
+        background-color: #0ff;
+        color: #000;
+        box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+      }
     }
   }
 }

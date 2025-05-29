@@ -56,16 +56,27 @@ export default {
 
 
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+
 .header-timer {
   width: 100%;
   height: 100%;
-  background-color: #eee;
+  background-color: $bg-dark;
   position: relative;
+  border: 2px solid $neon-blue;
+  box-shadow: 0 0 10px $neon-blue, 0 0 20px $neon-blue;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
   transition: width 1s linear, background-color 1s linear;
+  position: relative;
+  box-shadow: 0 0 10px $neon-green, 0 0 20px $neon-green;
 }
 
 .progress-bar p {
@@ -75,5 +86,9 @@ export default {
   transform: translate(-50%, -50%);
   margin: 0;
   font-weight: bold;
+  font-size: 1.2rem;
+  color: white;
+  text-shadow: 0 0 5px $neon-pink, 0 0 10px $neon-pink;
+  font-family: 'Poppins', sans-serif;
 }
 </style>

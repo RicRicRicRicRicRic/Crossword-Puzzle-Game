@@ -194,17 +194,27 @@ export default {
 
 
 <style scoped lang="scss">
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow: 0 0 10px, 0 0 20px;
+
 .playgrid-container {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
+  background-color: $bg-dark;
+  color: white;
 }
 
 .grid {
   width: 100%;
   height: 100%;
   display: grid;
+  border: 2px solid $neon-green;
+  box-shadow: 0 0 10px $neon-green;
 }
 
 .grid-row {
@@ -219,22 +229,30 @@ export default {
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s;
-}
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
 
-.black-cell {
-  background-color: #292929;
-}
+  &.black-cell {
+    background-color: #292929;
+  }
 
-.white-cell {
-  background-color: #fff;
-}
+  &.white-cell {
+    background-color: #fff;
+  }
 
-.correct {
-  background-color: #a1e887 !important;
-}
+  &.correct {
+    background-color: #a1e887 !important;
+    box-shadow: $glow $neon-green;
+  }
 
-.incorrect {
-  background-color: #f16666 !important;
+  &.incorrect {
+    background-color: #f16666 !important;
+    box-shadow: $glow $neon-pink;
+  }
+
+  &:hover {
+    box-shadow: $glow $neon-blue;
+  }
 }
 
 .white-cell input {
@@ -245,6 +263,14 @@ export default {
   outline: none;
   background: transparent;
   font-weight: bold;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 0 10px $neon-blue;
+  transition: box-shadow 0.2s ease;
+
+  &:focus {
+    box-shadow: 0 0 15px $neon-blue;
+  }
 }
 
 .cell-number {
@@ -253,5 +279,7 @@ export default {
   left: 0;
   font-size: 0.7em;
   padding: 0 2px;
+  color: $neon-green;
+  text-shadow: 0 0 5px $neon-green;
 }
 </style>

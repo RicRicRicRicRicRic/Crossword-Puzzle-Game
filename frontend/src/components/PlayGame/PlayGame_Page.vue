@@ -171,24 +171,23 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow: 0 0 10px, 0 0 20px;
+
 .playgame-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: calc(100vh - 35px);
-  border-bottom: 5px solid;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.playgame-panel {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 91vh;
-  border-bottom: 5px solid;
-  overflow: hidden;
+  background-color: $bg-dark;
+  color: white;
+  border-bottom: 5px solid $neon-pink;
 }
 
 .playgame-panel {
@@ -196,7 +195,10 @@ export default {
   flex-direction: column;
   width: 1100px;
   height: 600px;
-  border: 2px solid black;
+  background-color: #111;
+  border: 2px solid $neon-green;
+  border-radius: 10px;
+  box-shadow: 0 0 20px $neon-green;
   overflow: hidden;
 }
 
@@ -204,16 +206,25 @@ export default {
   display: flex;
   gap: 10px;
   padding: 15px;
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #eee;
-  
-  input, select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+  background-color: #000;
+  border-bottom: 1px solid $neon-pink;
+
+  input,
+  select {
+    padding: 10px 14px;
+    background: #111;
+    border: 1px solid $neon-blue;
+    border-radius: 5px;
+    color: white;
     font-size: 14px;
+    box-shadow: 0 0 5px $neon-blue;
+    outline: none;
+
+    &:focus {
+      box-shadow: 0 0 10px $neon-blue;
+    }
   }
-  
+
   input[type="text"] {
     flex: 1;
   }
@@ -223,28 +234,27 @@ export default {
   list-style: none;
   padding: 0;
   margin: 0;
-  overflow-y: auto; 
-  flex: 1; 
+  overflow-y: auto;
+  flex: 1;
 }
 
 .game-selection {
   display: flex;
   padding: 15px;
-  border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
+  border-bottom: 1px solid #333;
   align-items: center;
-  
+  transition: background-color 0.3s;
+
   &:hover {
-    background-color: #f5f5f5;
+    background-color: #222;
   }
 }
 
 .left-section {
   width: 120px;
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
-
 }
 
 .pfp-container {
@@ -252,13 +262,13 @@ export default {
   height: 60px;
   overflow: hidden;
   border-radius: 50%;
-  
-  
+  border: 2px solid $neon-green;
+  box-shadow: 0 0 10px $neon-green;
+
   .user-pfp {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    
   }
 }
 
@@ -269,19 +279,24 @@ export default {
     margin: 0 0 5px 0;
     padding-left: 50px;
     font-size: 20px;
+    color: $neon-green;
+    text-shadow: 0 0 5px $neon-green;
   }
-  
+
   .info-sections {
     display: flex;
     font-size: 14px;
-    
-    .center-left, .center-right, .center-center {
+
+    .center-left,
+    .center-right,
+    .center-center {
       padding-left: 50px;
       flex: 1;
-      
+
       p {
         margin: 5px 0;
-        color: #666;
+        color: #ccc;
+        text-shadow: 0 0 2px #0ff;
       }
     }
   }
@@ -292,28 +307,39 @@ export default {
   justify-content: center;
   align-items: center;
   width: 200px;
-  
+
   button {
-    padding: 8px 20px;
-    background-color: #47b94a;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: $neon-green;
+    border: 2px solid $neon-green;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    
+    box-shadow: 0 0 10px $neon-green;
+    transition: all 0.2s;
+
     &:hover {
-      background-color: #3f8142;
+      background-color: $neon-green;
+      color: #000;
+      box-shadow: 0 0 20px $neon-green;
     }
   }
 }
 
-.loading, .error {
+.loading,
+.error {
   padding: 20px;
   text-align: center;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .error {
-  color: #d32f2f;
+  color: $neon-pink;
+  text-shadow: 0 0 8px $neon-pink;
 }
 </style>

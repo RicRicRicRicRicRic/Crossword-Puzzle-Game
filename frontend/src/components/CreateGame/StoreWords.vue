@@ -43,13 +43,8 @@ export default {
             <h4>Across Definition</h4>
           </div>
           <ul class="definitions">
-            <li
-              v-for="(item, index) in acrossWords"
-              :key="index"
-              class="definition-item"
-              @click="selectWord(item.word)"
-              :class="{ selected: isSelected(item.word) }"
-            >
+            <li v-for="(item, index) in acrossWords" :key="index" class="definition-item" @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }">
               <strong>{{ index + 1 }}. </strong>{{ item.definition }}
             </li>
           </ul>
@@ -61,13 +56,8 @@ export default {
             <h4>Down Definition</h4>
           </div>
           <ul class="definitions">
-            <li
-              v-for="(item, index) in downWords"
-              :key="index"
-              class="definition-item"
-              @click="selectWord(item.word)"
-              :class="{ selected: isSelected(item.word) }"
-            >
+            <li v-for="(item, index) in downWords" :key="index" class="definition-item" @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }">
               <strong>{{ index + 1 }}. </strong>{{ item.definition }}
             </li>
           </ul>
@@ -82,14 +72,10 @@ export default {
             <h4>Across Words</h4>
           </div>
           <ul class="words">
-            <li
-              v-for="(item, index) in acrossWords"
-              :key="index"
-              class="word-item"
-              @click="selectWord(item.word)"
-              :class="{ selected: isSelected(item.word) }"
-            >
-              <strong>{{ index + 1 }}. </strong>{{ item.word }}
+            <li v-for="(item, index) in acrossWords" :key="index" class="word-item" @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }">
+              <strong>{{ index + 1 }}.</strong>
+              <span>{{ item.word }}</span>
               <button @click.stop="remove('across', index)">−</button>
             </li>
           </ul>
@@ -101,14 +87,10 @@ export default {
             <h4>Down Words</h4>
           </div>
           <ul class="words">
-            <li
-              v-for="(item, index) in downWords"
-              :key="index"
-              class="word-item"
-              @click="selectWord(item.word)"
-              :class="{ selected: isSelected(item.word) }"
-            >
-              <strong>{{ index + 1 }}. </strong>{{ item.word }}
+            <li v-for="(item, index) in downWords" :key="index" class="word-item" @click="selectWord(item.word)"
+              :class="{ selected: isSelected(item.word) }">
+              <strong>{{ index + 1 }}.</strong>
+              <span>{{ item.word }}</span>
               <button @click.stop="remove('down', index)">−</button>
             </li>
           </ul>
@@ -119,11 +101,21 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
+
+$neon-color: #9a7bff;
+$bg-color: #0a0a0a;
+$text-color: #ffffff;
+
 .store-words-container {
-  height: 100%;
+  width: 88%;
+  height: 96.5%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: $bg-color;
+  color: $text-color;
+  font-family: 'Poppins', sans-serif;
 }
 
 .section {
@@ -131,88 +123,121 @@ export default {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  
-  .column {
-    flex: 1;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    min-height: 0; 
+  min-height: 0; // ensures children can flex properly
+}
 
-    button {
-      color: #f0f0f0;
-      text-align: center;
-      height: 25px;
-      border: 1px solid #ccc;
-      background-color: #af2c2c;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      font-size: 20px;
+.column {
+  flex: 1;
+  border: 1px solid color.adjust($neon-color);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px;
+  background-color: color.adjust($bg-color, $lightness: 5%);
 
-      &:hover {
-        background-color: #ff0000;
-      }
-    }
-  }
-  
-  .across,
-  .down {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-  }
-  
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 100%;
-    height: 40px;
-    border-bottom: 2px solid;
-    flex-shrink: 0;
-  }
-  
-  .definitions,
-  .words {
-    padding: 10px;
-    overflow-y: auto;
-    flex: 1;
-    margin: 0;
-    list-style: none;
-  }
-  
-  .definition-item,
-  .word-item {
-    padding: 5px;
-    border-bottom: 1px dashed #ccc;
-    transition: background-color 0.2s;
+  button {
+    color: $text-color;
+    background-color: transparent;
+    border: 2px solid $neon-color;
+    border-radius: 4px;
+    font-size: 20px;
+    height: 25px;
+    width: 30px;
     cursor: pointer;
-    
+    box-shadow: 0 0 5px $neon-color;
+    transition: 0.3s;
+
     &:hover {
-      background-color: #d3d3d3; 
+      background-color: $neon-color;
+      color: $bg-color;
+      box-shadow: 0 0 10px $neon-color, 0 0 20px $neon-color;
     }
   }
-  
-  .word-item {
-    overflow-wrap: break-word; /* or word-wrap: break-word; */
-    word-break: break-all;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .selected {
-    background-color: #90ee90; 
-  }
-  
+}
 
-  .selected:hover {
-    background-color: #006400;
+.across,
+.down {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 40px;
+  border-bottom: 2px solid $neon-color;
+  color: $neon-color;
+  text-shadow: 0 0 5px $neon-color;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.definitions,
+.words {
+  padding: 8px 10px;
+  overflow: auto;
+  flex: 1;
+  margin: 0;
+  list-style: none;
+  min-height: 0;
+}
+
+.definition-item,
+.word-item {
+  font-size: 14px; // smaller size to reduce wrapping
+  line-height: 1.2;
+  max-height: 48px; // optional cap if needed
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 6px 10px;
+  border-bottom: 1px dashed color.adjust($neon-color, $lightness: -20%);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: color.adjust($neon-color, $lightness: -40%, $alpha: -0.8);
+    box-shadow: 0 0 5px $neon-color;
   }
+}
+
+.word-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding-right: 5px;
+
+  strong {
+    white-space: nowrap;
+  }
+
+  span {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: left;
+  }
+
+  button {
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+}
+
+.selected {
+  background-color: color.adjust($neon-color, $lightness: -50%);
+  box-shadow: 0 0 10px $neon-color;
+}
+
+.selected:hover {
+  background-color: $neon-color;
+  color: $bg-color;
 }
 </style>

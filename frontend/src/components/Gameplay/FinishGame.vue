@@ -113,60 +113,100 @@ export default {
 </template>
 
   
-<style scoped>
-  .finish-game-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+<style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow: 0 0 10px, 0 0 20px;
+
+.finish-game-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 10, 10, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.finish-game-content {
+  background-color: #111;
+  padding: 40px 30px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  color: white;
+  border: 2px solid $neon-pink;
+  box-shadow: 0 0 15px $neon-pink;
+
+  h2 {
+    font-size: 28px;
+    color: $neon-green;
+    text-shadow: 0 0 10px $neon-green;
+    margin-bottom: 15px;
   }
-  
-  .finish-game-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    text-align: center;
-    max-width: 500px;
-    width: 90%;
+
+  h3,
+  h4 {
+    margin: 10px 0;
+    color: $neon-blue;
+    text-shadow: 0 0 8px $neon-blue;
   }
-  
-  .finish-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .finish-btn:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
+
   .status-message {
     margin: 15px 0;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-shadow: 0 0 5px;
+    border: 1px solid;
+
+    &.success {
+      background-color: #0a1;
+      color: $neon-green;
+      border-color: $neon-green;
+      box-shadow: 0 0 10px $neon-green;
+    }
+
+    &.error {
+      background-color: #311;
+      color: $neon-pink;
+      border-color: $neon-pink;
+      box-shadow: 0 0 10px $neon-pink;
+    }
   }
-  
-  .status-message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+
+  .finish-btn {
+    margin-top: 25px;
+    padding: 12px 30px;
+    background-color: transparent;
+    color: $neon-green;
+    border: 2px solid $neon-green;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 10px $neon-green;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+      background-color: $neon-green;
+      color: #000;
+      box-shadow: 0 0 20px $neon-green;
+    }
+
+    &:disabled {
+      background-color: #222;
+      color: #999;
+      border-color: #444;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
   }
-  
-  .status-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-  }
+}
 </style>

@@ -79,18 +79,26 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+* {
+  font-family: 'Poppins', sans-serif;
+  color: #0ff;
+}
+
 .dashboard-container {
   position: relative;
   height: 100vh;
   overflow: hidden;
+  background-color: #000;
 }
 
 .dashboard-panel {
   margin-left: 100px;
-  margin-top: 50px;
+  margin-top: 65px;
   height: calc(100vh - 65px);
   overflow-y: auto;
-  overflow: hidden;
+  background-color: #0a0a0a;
+  padding: 20px;
+  box-shadow: inset 0 0 10px #00fff7;
 }
 
 .navigation-bar {
@@ -99,10 +107,11 @@ export default {
   left: 0;
   width: 100px;
   height: 100vh;
-  border: 2px ridge;
-  background-color: white;
+  border: 2px solid #00fff7;
+  background-color: #000;
   transition: width 200ms ease;
   z-index: 10;
+  box-shadow: 0 0 20px #00fff7;
 
   &:hover {
     width: 220px;
@@ -126,8 +135,14 @@ export default {
   position: relative;
   width: 100px;
   height: 80px;
+  margin-bottom: 10px;
   transition: width 200ms ease;
-  font-size: 16px;
+  font-size: 13px; /* Adjust the font size here */
+  background-color: #111;
+  border: 1px solid #0ff;
+  box-shadow: 0 0 10px #00fff7;
+  color: #0ff;
+  cursor: pointer;
 
   p {
     position: absolute;
@@ -136,6 +151,19 @@ export default {
     transform: translateY(-50%);
     margin: 0;
     opacity: 0;
+    color: #0ff;
+    text-shadow: 0 0 5px #0ff;
+  }
+
+  &:hover {
+    background-color: #0ff;
+    color: #000;
+    transition: 0.3s ease;
+
+    p {
+      color: #000;
+      text-shadow: none;
+    }
   }
 }
 
@@ -148,16 +176,23 @@ export default {
 }
 
 .header-bar {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 100;
+  font-size: 2rem;
+  letter-spacing: 10px;
   position: fixed;
   top: 0;
   left: 100px;
   width: calc(100% - 100px);
   height: 65px;
-  border-bottom: 2px solid;
-  background-color: white;
+  border-bottom: 2px solid #00fff7;
+  background-color: #000;
   font-size: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #0ff;
+  text-shadow: 0 0 5px #00fff7, 0 0 10px #00fff7;
+  box-shadow: 0 0 10px #00fff7;
 }
 </style>

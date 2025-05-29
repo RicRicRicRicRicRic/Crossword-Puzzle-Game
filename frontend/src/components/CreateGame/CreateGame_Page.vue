@@ -33,48 +33,74 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+$neon-green: #39ff14;
+$neon-blue: #00ffff;
+$neon-pink: #ff4ff8;
+$bg-dark: #0a0a0a;
+$glow-green: 0 0 10px $neon-green, 0 0 20px $neon-green;
+$glow-blue: 0 0 10px $neon-blue, 0 0 20px $neon-blue;
+$glow-pink: 0 0 10px $neon-pink, 0 0 20px $neon-pink;
+
 .creategame-container {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 16px;
   height: 91vh;
-  border-bottom: 5px solid;
+  background-color: $bg-dark;
+  color: white;
+  border-bottom: 5px solid $neon-pink;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .creategame-panel {
   display: flex;
   width: 1360px;
   height: 600px;
-  border: 2px solid black;
+  border: 2px solid $neon-green;
+  border-radius: 10px;
+  box-shadow: $glow-green;
+  overflow: hidden;
+  background-color: #111;
 
   .left-column {
-    flex: 0 0 50%; 
+    flex: 0 0 50%;
     height: 100%;
-    border-right: 2px solid #000000;
+    border-right: 2px solid $neon-blue;
+    box-shadow: inset $glow-blue;
+    padding: 10px;
   }
 
   .middle-column {
-    flex: 0 0 20%; 
+    flex: 0 0 20%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #ccc; 
+    border-right: 2px solid $neon-pink;
+    box-shadow: inset $glow-pink;
 
-    .top-half{
-      border-bottom: 2px solid;
+    .top-half {
+      height: 50%;
+      border-bottom: 2px solid $neon-blue;
+      box-shadow: inset $glow-blue;
+      padding: 10px;
+      overflow: auto;
     }
 
-    .top-half, .bottom-half {
+    .bottom-half {
       height: 50%;
-      overflow: auto; 
+      padding: 10px;
+      overflow: auto;
     }
   }
 
   .right-column {
     flex: 0 0 30%;
     height: 100%;
-    border-left: 2px solid;
+    border-left: 2px solid $neon-green;
+    box-shadow: inset $glow-green;
+    padding: 10px;
   }
 }
 </style>
