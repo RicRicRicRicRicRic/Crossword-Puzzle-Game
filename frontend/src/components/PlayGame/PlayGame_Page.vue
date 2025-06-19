@@ -7,6 +7,8 @@ import { mapState } from 'vuex';
 export default {
   components: { AboutGame },
   props: {
+    // Keep the prop for flexibility if a parent wants to override,
+    // but we'll primarily rely on mapState for the logged-in user.
     user: {
       type: Object,
       default: null
@@ -27,6 +29,7 @@ export default {
     }
   },
   computed: {
+    // Map the 'user' state from the Vuex store to a computed property
     ...mapState({
       loggedInUser: state => state.user 
     }),
@@ -176,7 +179,9 @@ export default {
               </div>
               <div class="center-right">
                 <p>Time: {{ game.time }} min</p>
-                <p>Status: {{ getStatus(game) }}</p>
+                <p>
+                  Status: <span :class="{'status-finished': getStatus(game) === 'finished', 'status-unfinished': getStatus(game) === 'unfinished'}">{{ getStatus(game) }}</span> 
+                </p>
               </div>
             </div>
           </div>
@@ -319,12 +324,6 @@ $glow: 0 0 10px, 0 0 20px;
     .center-center {
       padding-left: 50px;
       flex: 1;
-
-      p {
-        margin: 5px 0;
-        color: #ccc;
-        text-shadow: 0 0 2px #0ff;
-      }
     }
   }
 }
@@ -368,5 +367,15 @@ $glow: 0 0 10px, 0 0 20px;
 .error {
   color: $neon-pink;
   text-shadow: 0 0 8px $neon-pink;
+}
+
+.center-right p span.status-finished { 
+  color: $neon-green;
+  text-shadow: 0 0 5px $neon-green;
+}
+
+.center-right p span.status-unfinished {
+  color: $neon-pink;
+  text-shadow: 0 0 5px $neon-pink;
 }
 </style>
