@@ -45,13 +45,14 @@ $glow-pink: 0 0 10px $neon-pink, 0 0 20px $neon-pink;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 16px;
+
   height: 91vh;
   background-color: $bg-dark;
   color: white;
   border-bottom: 5px solid $neon-pink;
   font-size: 13px;
   font-family: 'Poppins', sans-serif;
+  overflow: hidden;
 }
 
 .creategame-panel {
@@ -85,13 +86,14 @@ $glow-pink: 0 0 10px $neon-pink, 0 0 20px $neon-pink;
       border-bottom: 2px solid $neon-blue;
       box-shadow: inset $glow-blue;
       padding: 10px;
-      overflow: auto;
+      overflow: hidden;
     }
 
     .bottom-half {
       height: 50%;
       padding: 10px;
       overflow: auto;
+      overflow: hidden;
     }
   }
 

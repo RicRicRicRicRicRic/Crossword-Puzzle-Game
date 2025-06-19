@@ -1,7 +1,7 @@
 //components/Authentication/Auth_page.vue
 <script>
-import login from '../authentication/Login.vue';
-import register from '../authentication/Register.vue';
+import login from '../Authentication/Login.vue';
+import register from '../Authentication/Register.vue';
 export default {
   name: 'Auth_page',
   components: {

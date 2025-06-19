@@ -277,9 +277,9 @@ $glow: 0 0 10px, 0 0 20px;
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 0.7em;
+  font-size: 1em;
   padding: 0 2px;
-  color: $neon-green;
-  text-shadow: 0 0 5px $neon-green;
+  color: $neon-pink;
+  text-shadow: 0 0 5px $neon-pink;
 }
 </style>

@@ -193,7 +193,6 @@ $text-color: #ffffff;
 .word-item {
   font-size: 14px; // smaller size to reduce wrapping
   line-height: 1.2;
-  max-height: 48px; // optional cap if needed
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 6px 10px;

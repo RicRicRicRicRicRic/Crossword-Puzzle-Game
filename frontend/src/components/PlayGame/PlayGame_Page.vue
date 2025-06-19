@@ -181,7 +181,7 @@ $glow: 0 0 10px, 0 0 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 35px);
+  height: 100%;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;

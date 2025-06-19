@@ -93,12 +93,13 @@ export default {
 
 .dashboard-panel {
   margin-left: 100px;
-  margin-top: 65px;
+  margin-top: 50px;
   height: calc(100vh - 65px);
   overflow-y: auto;
   background-color: #0a0a0a;
   padding: 20px;
   box-shadow: inset 0 0 10px #00fff7;
+    overflow: hidden;
 }
 
 .navigation-bar {

@@ -134,7 +134,7 @@ $font-color: #fff;
   .input-box {
     width: 98%;
     max-width: 500px;
-    margin: 10px auto 20px;
+    margin: 10px auto 10px;
     position: relative;
     display: flex;
     justify-content: center;
@@ -196,11 +196,12 @@ $font-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px $neon-color;
     background-color: rgba(0, 0, 0, 0.3);
-    height: 50%;
+    max-height: 130px;
     display: flex;
     flex-direction: column;
 
     .selected-word {
+     margin-bottom: -5px;
       h3 {
         margin: 0;
         text-shadow: 0 0 5px $neon-color, 0 0 10px $neon-color;
@@ -213,7 +214,7 @@ $font-color: #fff;
     }
 
     .definition-content {
-      margin-top: 10px;
+      margin-top: 5px;
       overflow-y: auto;
       flex: 1;
 
