@@ -1,9 +1,8 @@
-//components/PlayGame/PlayGame_Page.vue
-
 <script>
 import api from '@/services/api';
 import defaultpfp from '@/assets/defaultpfp.png';
 import AboutGame from './AboutGame.vue';
+import { mapState } from 'vuex'; 
 
 export default {
   components: { AboutGame },
@@ -28,6 +27,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      loggedInUser: state => state.user 
+    }),
     getProfileImage() {
       return (profileImg) => {
         if (profileImg) {
@@ -106,10 +108,35 @@ export default {
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    getStatus(game) {
+      // Use loggedInUser from Vuex store
+      const currentUserAccId = this.loggedInUser ? this.loggedInUser.acc_ID : null;
+
+      console.log('--- Checking Game Status ---');
+      console.log('Logged-in User ID (from store):', currentUserAccId || 'User not logged in');
+      console.log('Game ID:', game.game_ID);
+      console.log('Game finished_players data:', game.finished_players);
+
+      if (!currentUserAccId) {
+        console.log('Status: unfinished (User not logged in or acc_ID missing from store)');
+        return 'unfinished';
+      }
+      
+      if (Array.isArray(game.finished_players)) {
+        const isFinished = game.finished_players.some(player => {
+          console.log(`Comparing player.acc_ID: ${player.acc_ID} with user.acc_ID: ${currentUserAccId}`);
+          return player.acc_ID === currentUserAccId;
+        });
+        console.log(`Status: ${isFinished ? 'finished' : 'unfinished'}`);
+        return isFinished ? 'finished' : 'unfinished';
+      }
+
+      console.log('Status: unfinished (finished_players is not an array or is null)');
+      return 'unfinished';
     }
   }
 };
-
 </script>
 
 <template>
@@ -149,7 +176,7 @@ export default {
               </div>
               <div class="center-right">
                 <p>Time: {{ game.time }} min</p>
-                <p>Status: </p>
+                <p>Status: {{ getStatus(game) }}</p>
               </div>
             </div>
           </div>
