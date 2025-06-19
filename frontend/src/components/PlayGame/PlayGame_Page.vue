@@ -7,8 +7,6 @@ import { mapState } from 'vuex';
 export default {
   components: { AboutGame },
   props: {
-    // Keep the prop for flexibility if a parent wants to override,
-    // but we'll primarily rely on mapState for the logged-in user.
     user: {
       type: Object,
       default: null
@@ -29,7 +27,7 @@ export default {
     }
   },
   computed: {
-    // Map the 'user' state from the Vuex store to a computed property
+
     ...mapState({
       loggedInUser: state => state.user 
     }),
@@ -113,7 +111,7 @@ export default {
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
     getStatus(game) {
-      // Use loggedInUser from Vuex store
+
       const currentUserAccId = this.loggedInUser ? this.loggedInUser.acc_ID : null;
 
       console.log('--- Checking Game Status ---');

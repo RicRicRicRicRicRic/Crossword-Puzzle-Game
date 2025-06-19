@@ -1,5 +1,3 @@
-//components/Gameplay/Hotbar.vue
-
 <script>
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
@@ -9,21 +7,7 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     const activeTab = ref('Score');
-    const volume = ref(50);
     const showQuitModal = ref(false);
-    
-    const volumeIcon = computed(() => {
-      if (volume.value === 0) {
-        return "🔇";
-      } else if (volume.value >= 70) {
-        return "🔊";
-      } else if (volume.value >= 40) {
-        return "🔉";
-      } else if (volume.value >= 1) {
-        return "🔈";
-      }
-      return "";
-    });
     
     const quitGame = () => {
       showQuitModal.value = true;
@@ -41,8 +25,6 @@ export default {
     return {
       score: computed(() => store.state.score),
       activeTab,
-      volume,
-      volumeIcon,
       quitGame,
       showQuitModal,
       confirmQuit,
@@ -73,17 +55,6 @@ export default {
       </div>
       <div v-if="activeTab === 'Settings'">
         <div class="settings-controls">
-          <div class="volume-control">
-            <span class="volume-icon">{{ volumeIcon }}</span>
-            <input
-              type="range"
-              class="volume-slider"
-              min="0"
-              max="100"
-              v-model.number="volume"
-            />
-            <span class="volume-number">{{ volume }}</span>
-          </div>
           <button class="quit-button" @click="quitGame">Quit Game</button>
         </div>
       </div>
@@ -185,77 +156,11 @@ $glow: 0 0 10px, 0 0 20px;
     gap: 20px;
   }
 
-  .volume-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 250px;
-    background: #111;
-    border: 1px solid $neon-blue;
-    border-radius: 5px;
-    padding: 5px;
-    box-shadow: 0 0 10px $neon-blue;
-
-    .volume-icon {
-      font-size: 1.5rem;
-      width: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      margin-left: 5px;
-      color: $neon-green;
-    }
-
-    .volume-slider {
-      flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 3px;
-      border-radius: 3px;
-      background: $neon-blue;
-      outline: none;
-      margin: 0;
-      padding: 0;
-
-      &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: $neon-green;
-        cursor: pointer;
-        border: none;
-        box-shadow: 0 0 5px $neon-green;
-      }
-
-      &::-moz-range-thumb {
-        width: 16px;
-        height: 16px;
-        border: none;
-        border-radius: 50%;
-        background: $neon-green;
-        cursor: pointer;
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-        box-shadow: 0 0 5px $neon-green;
-      }
-    }
-
-    .volume-number {
-      width: 2rem;
-      text-align: center;
-      font-size: 1rem;
-      color: white;
-    }
-  }
+  /* Removed .volume-control and its child styles */
 
   .quit-button {
     padding: 10px 10px;
-    margin-top: 20px;
+    margin-top: 20px; /* Adjusted margin since volume control is removed */
     background-color: $neon-pink;
     color: white;
     border: none;

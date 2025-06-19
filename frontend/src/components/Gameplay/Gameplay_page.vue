@@ -23,10 +23,8 @@ export default {
     const route = useRoute();
     const gameId = computed(() => route.params.gameId);
 
-    // This flag determines whether FinishGame is displayed.
     const showFinishGame = ref(false);
 
-    // Computed property that checks whether all the letters are correct.
     const gameCompleted = computed(() => {
       const gridSize = store.getters.gridSize;
       if (!gridSize) return false;
@@ -42,15 +40,12 @@ export default {
       return true;
     });
 
-    // Watch the gameCompleted computed property.
-    // When it becomes true, the finished game modal appears.
     watch(gameCompleted, (newVal) => {
       if (newVal) {
         showFinishGame.value = true;
       }
     });
 
-    // You can also trigger the modal manually via the quit button.
     const onQuitGame = () => {
       showFinishGame.value = true;
     };
@@ -120,6 +115,7 @@ $glow: 0 0 10px, 0 0 20px;
   background-color: $bg-dark;
   color: white;
   height: 100vh;
+  overflow: hidden;
 }
 
 .header-bar {
@@ -159,7 +155,6 @@ $glow: 0 0 10px, 0 0 20px;
     height: 100%;
     width: 680px;
     border-right: 2px solid $neon-blue;
-    padding: 10px;
     box-shadow: inset 0 0 10px $neon-blue;
   }
 

@@ -1,5 +1,3 @@
-//components/Gameplay/HeaderTimer.vue
-
 <script>
 import { computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
@@ -45,15 +43,12 @@ export default {
 };
 </script>
 
-
 <template>
   <div class="header-timer">
-    <div class="progress-bar" :style="progressBarStyle">
-      <p>{{ formattedTime }}</p>
-    </div>
+    <div class="progress-bar" :style="progressBarStyle"></div>
+    <p class="timer-text">{{ formattedTime }}</p>
   </div>
 </template>
-
 
 <style lang="scss" scoped>
 $neon-green: #39ff14;
@@ -65,7 +60,7 @@ $bg-dark: #0a0a0a;
   width: 100%;
   height: 100%;
   background-color: $bg-dark;
-  position: relative;
+  position: relative; 
   border: 2px solid $neon-blue;
   box-shadow: 0 0 10px $neon-blue, 0 0 20px $neon-blue;
   border-radius: 8px;
@@ -75,11 +70,10 @@ $bg-dark: #0a0a0a;
 .progress-bar {
   height: 100%;
   transition: width 1s linear, background-color 1s linear;
-  position: relative;
   box-shadow: 0 0 10px $neon-green, 0 0 20px $neon-green;
 }
 
-.progress-bar p {
+.timer-text { 
   position: absolute;
   top: 50%;
   left: 50%;
@@ -90,5 +84,6 @@ $bg-dark: #0a0a0a;
   color: white;
   text-shadow: 0 0 5px $neon-pink, 0 0 10px $neon-pink;
   font-family: 'Poppins', sans-serif;
+  z-index: 2; 
 }
 </style>
