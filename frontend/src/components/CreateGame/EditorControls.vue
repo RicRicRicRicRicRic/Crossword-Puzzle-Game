@@ -1,4 +1,3 @@
-//components/PlayGame/EditorControls.vue
 <script>
 import { ref } from 'vue';
 import { useStore } from 'vuex';
@@ -25,9 +24,6 @@ export default {
       showConfirmation.value = true;
     }
 
-    function resetGame() {
-    }
-
     function confirmSaveGame() {
       console.log('Game saved!');
       showConfirmation.value = false;
@@ -42,7 +38,6 @@ export default {
       move,
       setDirection,
       saveGame,
-      resetGame,
       showConfirmation,
       confirmSaveGame,
       cancelSaveGame
@@ -78,11 +73,9 @@ export default {
       </div>
       <div v-else-if="activeTab === 'save'" class="save-controls">
         <button @click="saveGame">Save Game</button>
-        <button @click="resetGame">Reset Game</button>
       </div>
     </div>
 
-    <!-- Confirmation modal overlay -->
     <div v-if="showConfirmation" class="modal-overlay">
       <ConfirmationSave @confirm="confirmSaveGame" @cancel="cancelSaveGame" />
     </div>
@@ -247,4 +240,5 @@ $bg-color: #0a0a0a;
     }
   }
 }
+
 </style>
